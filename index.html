@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>门店运营数据看板 · Operations Dashboard</title>
+<style>
+  :root { --bg:#f4f6f8; --card:#fff; --ink:#1a1d21; --mut:#6b7280; --line:#e5e7eb;
+          --acc:#b3541e; --acc2:#0e7c5b; --warn:#b91c1c; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  .wrap { max-width:1180px; margin:0 auto; padding:20px 16px 48px; }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; justify-content:space-between;
+           margin-bottom:16px; }
+  h1 { font-size:22px; margin:0; }
+  h1 small { display:block; font-size:12px; color:var(--mut); font-weight:400; margin-top:4px; }
+  .controls { background:var(--card); border:1px solid var(--line); border-radius:12px;
+              padding:14px 16px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+              margin-bottom:16px; }
+  .controls label { font-size:13px; color:var(--mut); }
+  .controls input[type=date], .controls select { padding:8px 10px; border:1px solid var(--line);
+              border-radius:8px; font-size:14px; }
+  .btn { padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:#fff;
+         cursor:pointer; font-size:13px; }
+  .btn.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .seg { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .seg button { border:0; background:#fff; padding:8px 14px; font-size:13px; cursor:pointer; }
+  .seg button.active { background:var(--acc); color:#fff; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;
+          margin-bottom:16px; }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .kpi .cn { font-size:13px; color:var(--mut); }
+  .kpi .es { font-size:11px; color:#9ca3af; margin-top:2px; }
+  .kpi .v1 { font-size:22px; font-weight:700; margin-top:8px; }
+  .kpi .v2 { font-size:12px; color:var(--mut); margin-top:2px; }
+  .kpi.hl { border-left:4px solid var(--acc); }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px;
+           padding:16px; margin-bottom:16px; }
+  .panel h2 { font-size:15px; margin:0 0 4px; }
+  .panel .sub { font-size:12px; color:var(--mut); margin-bottom:12px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { padding:9px 10px; border-bottom:1px solid var(--line); text-align:right;
+           white-space:nowrap; }
+  th:first-child, td:first-child { text-align:left; }
+  th { font-size:12px; color:var(--mut); font-weight:600; }
+  th .es { display:block; font-weight:400; font-size:10px; color:#9ca3af; }
+  td .mx { display:block; font-size:11px; color:var(--mut); }
+  tr.total td { font-weight:700; background:#faf7f2; }
+  .mixbar { height:26px; border-radius:8px; overflow:hidden; display:flex; margin:6px 0 4px; }
+  .mixbar div { display:flex; align-items:center; justify-content:center; color:#fff;
+                font-size:12px; font-weight:600; min-width:44px; }
+  .legend { display:flex; gap:18px; font-size:12px; color:var(--mut); }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
+  .foot { font-size:11px; color:var(--mut); margin-top:8px; line-height:1.7; }
+  .empty { padding:32px; text-align:center; color:var(--mut); font-size:14px; }
+  @media (max-width:640px){ .kpi .v1{font-size:19px;} th,td{padding:7px 6px;font-size:12px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>门店运营数据看板<small>Operations Dashboard · 每日自动更新</small></h1>
+    <div class="seg" id="curSeg">
+      <button data-cur="USD" class="active">USD 为主</button>
+      <button data-cur="MXN">MXN 为主</button>
+    </div>
+  </header>
+
+  <div class="controls">
+    <label>门店 <select id="storeSel"></select></label>
+    <button class="btn range active" data-r="mtd">本月累计</button>
+    <button class="btn range" data-r="7">近7天</button>
+    <button class="btn range" data-r="30">近30天</button>
+    <button class="btn range" data-r="all">全部</button>
+    <label>开始 <input type="date" id="dStart"></label>
+    <label>结束 <input type="date" id="dEnd"></label>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="panel">
+    <h2>每日含税总收入趋势 <span style="font-weight:400;font-size:12px;color:#6b7280">Daily VENTAS CON IMPUESTOS</span></h2>
+    <div class="sub" id="chartSub"></div>
+    <div id="chart"></div>
+  </div>
+
+  <div class="panel">
+    <h2>食物 / 酒水结构 <span style="font-weight:400;font-size:12px;color:#6b7280">ALIMENTOS vs BEBIDAS</span></h2>
+    <div class="sub">按所选日期区间汇总（不含税）</div>
+    <div class="mixbar" id="mixbar"></div>
+    <div class="legend" id="mixlegend"></div>
+  </div>
+
+  <div class="panel">
+    <h2>每日明细 <span style="font-weight:400;font-size:12px;color:#6b7280">Daily detail</span></h2>
+    <div class="sub">金额双币种显示 · 汇率 1 USD = 17 MXN</div>
+    <div style="overflow-x:auto"><table id="tbl"></table></div>
+    <div class="foot">
+      总折扣 TOTAL DESCUENTOS = 折扣明细（食物折扣 + 酒水折扣 + 其他折扣）；招待 TOTAL CORTESÍA = 招待免单（食物 + 酒水 + 其他）。<br>
+      现金差异 SOBRANTE(+)/FALTANTE(-)：正数为长款、负数为短款，红色预警。<br>
+      每单消费 CUENTA PROMEDIO = 不含税净收入 ÷ 订单数；人均消费 CONSUMO PROMEDIO = 不含税净收入 ÷ 客流数。
+    </div>
+  </div>
+  <div class="foot" id="updatedAt"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const DATA = window.__DASH_DATA__;
+const FX = DATA.fx_mxn_per_usd || 17;
+let cur = "USD"; // primary currency
+
+const $ = id => document.getElementById(id);
+const fmtUSD = n => "$" + n.toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtMXN = n => "MX$" + n.toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtInt = n => n.toLocaleString("en-US");
+function money(mxn){ return cur==="USD" ? {p:fmtUSD(mxn/FX), s:fmtMXN(mxn)} : {p:fmtMXN(mxn), s:fmtUSD(mxn/FX)}; }
+function moneyCell(mxn){ const m=money(mxn); return m.p + '<span class="mx">'+m.s+'</span>'; }
+function iso(d){ return d.toISOString().slice(0,10); }
+function todayStr(){ const n=new Date(); return iso(new Date(n.getTime()-n.getTimezoneOffset()*60000)); }
+
+// ---- init store selector ----
+const stores = DATA.stores;
+const storeSel = $("storeSel");
+Object.keys(stores).forEach(k=>{
+  const o=document.createElement("option"); o.value=k;
+  o.textContent = stores[k].name_cn + " · " + stores[k].name_es; storeSel.appendChild(o);
+});
+
+// ---- range handling ----
+let rangeMode="mtd";
+function setRange(mode){
+  rangeMode=mode;
+  document.querySelectorAll(".btn.range").forEach(b=>b.classList.toggle("active", b.dataset.r===mode));
+  const t = todayStr();
+  let s=t;
+  if(mode==="mtd") s = t.slice(0,8)+"01";
+  else if(mode==="7"||mode==="30"){ const d=new Date(); d.setDate(d.getDate()-(+mode-1)); s=iso(new Date(d.getTime()-d.getTimezoneOffset()*60000)); }
+  else if(mode==="all"){ s = minDate(); }
+  $("dStart").value=s; $("dEnd").value=t;
+  render();
+}
+function minDate(){ let m="9999"; DATA.records.forEach(r=>{ if(r.date<m) m=r.date; }); return m==="9999"?"":m; }
+document.querySelectorAll(".btn.range").forEach(b=>b.onclick=()=>setRange(b.dataset.r));
+$("dStart").onchange=$("dEnd").onchange=()=>{ rangeMode="custom";
+  document.querySelectorAll(".btn.range").forEach(b=>b.classList.remove("active")); render(); };
+storeSel.onchange=render;
+document.querySelectorAll("#curSeg button").forEach(b=>b.onclick=()=>{
+  cur=b.dataset.cur;
+  document.querySelectorAll("#curSeg button").forEach(x=>x.classList.toggle("active",x===b));
+  render();
+});
+
+function filtered(){
+  const s=$("dStart").value||"0000", e=$("dEnd").value||"9999", st=storeSel.value;
+  return DATA.records.filter(r=>r.store===st && r.date>=s && r.date<=e).sort((a,b)=>a.date<b.date?-1:1);
+}
+
+function agg(rows){
+  const sum=k=>rows.reduce((a,r)=>a+(r[k]||0),0);
+  const vci=sum("ventas_con_impuestos_mxn"), vn=sum("venta_neta_mxn"),
+        cu=sum("cuentas"), co=sum("comensales");
+  return { vci, comedor:sum("comedor_mxn"), alim:sum("alimentos_mxn"), beb:sum("bebidas_mxn"),
+    imp:sum("impuesto_mxn"), td:sum("total_descuentos_mxn"), cor:sum("cortesia_total_mxn"),
+    prop:sum("propinas_mxn"), sf:sum("sobrante_faltante_mxn"), cu, co,
+    ticket: cu? vn/cu:0, percap: co? vn/co:0, n:rows.length };
+}
+
+function kpi(cn,es,mxn,hl,count,pct){
+  const m = count? null : money(mxn);
+  const pl = (pct!=null && !count) ? `<div class="v2">占不含税收入 ${pct.toFixed(1)}%</div>` : "";
+  return `<div class="kpi${hl?" hl":""}"><div class="cn">${cn}</div><div class="es">${es}</div>`+
+    (count? `<div class="v1">${fmtInt(mxn)}</div>`
+           : `<div class="v1">${m.p}</div>${pl}<div class="v2">${m.s}</div>`)+`</div>`;
+}
+
+function kpiSF(mxn){
+  const m=money(mxn), c = mxn<0 ? "var(--warn)" : "var(--acc2)";
+  return `<div class="kpi"><div class="cn">现金差异</div><div class="es">SOBRANTE (+) / FALTANTE (-)</div>`+
+    `<div class="v1" style="color:${c}">${m.p}</div><div class="v2">${m.s}</div></div>`;
+}
+
+function render(){
+  const rows=filtered(), a=agg(rows);
+  const box=$("kpis");
+  if(!rows.length){ box.innerHTML=""; $("chart").innerHTML='<div class="empty">所选区间暂无数据</div>';
+    $("tbl").innerHTML=""; $("mixbar").innerHTML=""; $("mixlegend").innerHTML=""; $("chartSub").textContent=""; return; }
+  box.innerHTML =
+    kpi("含税总收入","VENTAS CON IMPUESTOS",a.vci,true) +
+    kpi("不含税收入","COMEDOR",a.comedor,true) +
+    kpi("食物","ALIMENTOS",a.alim,false,false,a.comedor?a.alim/a.comedor*100:0) +
+    kpi("酒水","BEBIDAS",a.beb,false,false,a.comedor?a.beb/a.comedor*100:0) +
+    kpi("增值税 16%","IMPUESTO",a.imp) +
+    kpi("总折扣","TOTAL DESCUENTOS",a.td) +
+    kpi("招待免单","TOTAL CORTESÍA",a.cor) +
+    kpi("小费","PROPINAS",a.prop) +
+    kpiSF(a.sf) +
+    kpi("订单数","CUENTAS",a.cu,false,true) +
+    kpi("客流数","COMENSALES",a.co,false,true) +
+    kpi("每单消费","CUENTA PROMEDIO",a.ticket) +
+    kpi("人均消费","CONSUMO PROMEDIO",a.percap);
+
+  // chart
+  const vals=rows.map(r=>r.ventas_con_impuestos_mxn/(cur==="USD"?FX:1));
+  const max=Math.max(...vals,1), W=Math.max(rows.length*64, 320), H=220, pad=34;
+  const bw=Math.min(44,(W-pad*2)/rows.length*0.62);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">`;
+  [0.25,0.5,0.75,1].forEach(f=>{ const y=H-30-(H-60)*f;
+    svg+=`<line x1="${pad}" y1="${y}" x2="${W-8}" y2="${y}" stroke="#eef0f2"/>`; });
+  rows.forEach((r,i)=>{
+    const h=(H-60)*(vals[i]/max), x=pad+((W-pad*2)/rows.length)*i+((W-pad*2)/rows.length-bw)/2, y=H-30-h;
+    const lab=(cur==="USD"?fmtUSD(vals[i]):fmtMXN(vals[i]));
+    svg+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="#b3541e"><title>${r.date}
+${lab}</title></rect>`;
+    if(rows.length<=31) svg+=`<text x="${(x+bw/2).toFixed(1)}" y="${H-12}" font-size="10" text-anchor="middle" fill="#9ca3af">${r.date.slice(5)}</text>`;
+  });
+  svg+=`<text x="${pad}" y="14" font-size="11" fill="#6b7280">最高 ${cur==="USD"?fmtUSD(max):fmtMXN(max)}</text></svg>`;
+  $("chart").innerHTML=svg;
+  $("chartSub").textContent=`${rows[0].date} ~ ${rows[rows.length-1].date} · 共 ${rows.length} 天 · 主货币 ${cur}`;
+
+  // mix
+  const tot=a.alim+a.beb||1, pa=a.alim/tot*100, pb=a.beb/tot*100;
+  $("mixbar").innerHTML=`<div style="width:${pa}%;background:#b3541e">${pa.toFixed(0)}%</div><div style="width:${pb}%;background:#0e7c5b">${pb.toFixed(0)}%</div>`;
+  const ma=money(a.alim), mb=money(a.beb);
+  $("mixlegend").innerHTML=
+    `<span><span class="dot" style="background:#b3541e"></span>食物 ALIMENTOS · ${ma.p} <span style="color:#9ca3af">(${ma.s})</span></span>`+
+    `<span><span class="dot" style="background:#0e7c5b"></span>酒水 BEBIDAS · ${mb.p} <span style="color:#9ca3af">(${mb.s})</span></span>`;
+
+  // table
+  const cols=[["日期<br><span class='es'>FECHA</span>"],["含税总收入<br><span class='es'>VENTAS C/IMP</span>"],
+    ["不含税收入<br><span class='es'>COMEDOR</span>"],["食物<br><span class='es'>ALIMENTOS</span>"],
+    ["酒水<br><span class='es'>BEBIDAS</span>"],["增值税<br><span class='es'>IMPUESTO 16%</span>"],
+    ["折扣<br><span class='es'>DESCUENTOS</span>"],["招待<br><span class='es'>CORTESÍA</span>"],
+    ["小费<br><span class='es'>PROPINAS</span>"],["现金差异<br><span class='es'>SOBR./FALT.</span>"],
+    ["订单<span class='es'>CUENTAS</span>"],
+    ["客流<span class='es'>COMENSALES</span>"],["每单消费<span class='es'>TICKET PROM.</span>"]];
+  let th="<tr>"+cols.map(c=>`<th>${c[0]}</th>`).join("")+"</tr>";
+  let body=rows.map(r=>{
+    const tp=r.cuentas? r.venta_neta_mxn/r.cuentas:0;
+    const sf=r.sobrante_faltante_mxn||0, sfc=sf<0?"color:#b91c1c":"color:#0e7c5b";
+    return `<tr><td>${r.date}</td><td>${moneyCell(r.ventas_con_impuestos_mxn)}</td>`+
+    `<td>${moneyCell(r.comedor_mxn)}</td><td>${moneyCell(r.alimentos_mxn)}</td>`+
+    `<td>${moneyCell(r.bebidas_mxn)}</td><td>${moneyCell(r.impuesto_mxn)}</td>`+
+    `<td>${moneyCell(r.total_descuentos_mxn)}</td><td>${moneyCell(r.cortesia_total_mxn)}</td>`+
+    `<td>${moneyCell(r.propinas_mxn)}</td><td style="${sfc};font-weight:600">${moneyCell(sf)}</td>`+
+    `<td>${fmtInt(r.cuentas)}</td>`+
+    `<td>${fmtInt(r.comensales)}</td><td>${moneyCell(tp)}</td></tr>`;
+  }).join("");
+  const tfoot=`<tr class="total"><td>区间合计 (${rows.length}天)</td><td>${moneyCell(a.vci)}</td>`+
+    `<td>${moneyCell(a.comedor)}</td><td>${moneyCell(a.alim)}</td><td>${moneyCell(a.beb)}</td>`+
+    `<td>${moneyCell(a.imp)}</td><td>${moneyCell(a.td)}</td><td>${moneyCell(a.cor)}</td>`+
+    `<td>${moneyCell(a.prop)}</td><td>${moneyCell(a.sf)}</td><td>${fmtInt(a.cu)}</td>`+
+    `<td>${fmtInt(a.co)}</td><td>${moneyCell(a.ticket)}</td></tr>`;
+  $("tbl").innerHTML=th+body+tfoot;
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-09-28 15:24 · 汇率 Rate: 1 USD = "+FX+" MXN";
+}
+
+// default: MTD
+setRange("mtd");
+</script>
+</body>
+</html>
