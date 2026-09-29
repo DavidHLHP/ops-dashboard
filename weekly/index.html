@@ -94,7 +94,7 @@
 
   <div class="panel">
     <h2>单点 À LA CARTE vs 任点任食 AYCE <span style="font-weight:400;font-size:12px;color:#6b7280">% of total sales</span></h2>
-    <div class="sub">W36、W37、W38 有真实占比数据，可切换查看。W39 报告中的占比表与 W36 逐字相同，疑为复制粘贴错误，未采用。</div>
+    <div class="sub">W36、W37、W38 有真实占比数据，可切换查看。W39 报告中的占比表与旧版 W36 逐字相同，疑为复制粘贴错误，未采用。⚠ 标记为报告数据疑似有误。</div>
     <div class="seg" id="mixSeg" style="margin-bottom:10px"></div>
     <div id="mixdays"></div>
     <div class="legend" style="margin-top:10px">
@@ -221,10 +221,12 @@ function render(){
   function mixRender(){
     const wk = DATA.alacarte[mixIdx];
     function dayRow(lab, al, ay, bold){
+      const sum = al + ay, bad = sum > 100;
+      const k = bad ? 100/sum : 1;  // 疑似错误数据时按比例压缩显示
       const other = Math.max(0, 100 - al - ay);
-      return `<div class="dayrow"${bold?' style="border-bottom:0;font-weight:700"':""}><div class="daylab">${lab}</div>`+
-        `<div class="stackbar"><div style="width:${al}%;background:#b3541e">${al.toFixed(2)}%</div>`+
-        `<div style="width:${ay}%;background:#0e7c5b">${ay.toFixed(2)}%</div>`+
+      return `<div class="dayrow"${bold?' style="border-bottom:0;font-weight:700"':""}><div class="daylab">${lab}${bad?' <span style="color:#b91c1c" title="单点+AYCE 超过 100%，数据疑似有误">⚠</span>':""}</div>`+
+        `<div class="stackbar"><div style="width:${(al*k).toFixed(2)}%;background:#b3541e">${al.toFixed(2)}%</div>`+
+        `<div style="width:${(ay*k).toFixed(2)}%;background:#0e7c5b">${ay.toFixed(2)}%</div>`+
         (other>4?`<div style="width:${other}%;background:#d1d5db;color:#6b7280">${other.toFixed(0)}%</div>`:`<div style="width:${other}%;background:#d1d5db"></div>`)+
         `</div><div class="dayval">单点 ${al.toFixed(2)}%<span class="mx">AYCE ${ay.toFixed(2)}%</span></div></div>`;
     }
@@ -250,8 +252,10 @@ function render(){
     `汇率 Rate: 1 USD = ${FX} MXN · 数据来源：W36–W39 周报 PDF（Happy Lamb México）。<br>`+
     `销售额为税前口径（周报含税数字 ÷ 1.16 换算，16% 增值税）；人工成本 = 税前人工 × 1.28（含 28% 税费）。<br>`+
     `数据备注：W38 人工成本采用 W39 对比页修正值 201,035（W38 本期报告为 201,435）；`+
-    `单点/AYCE 占比：W36、W37、W38 为真实数据（W37 旧版误用 W36 的表，新版已修正；W37 报告周均值 1.46% 与其每日数值不符，周均按每日数值重算为 2.04%）；`+
-    `W39 报告该表仍与 W36 逐字相同、疑为复制粘贴错误，未采用。`;
+    `单点/AYCE 占比：W36 为最新修正版（-3 版）、W37 为修正数据、W38 为新增（W37 旧版误用 W36 的表，新版已修正；`+
+    `W37 报告周均值 1.46% 与其每日数值不符，周均按每日数值重算为 2.04%）；`+
+    `⚠ W36（-3 版）周三单点 85.00% + AYCE 78.09% = 163%，明显录入错误待确认；该表周一 TOTAL SALES（184,239.95）与人工销售页（56,413.60）不一致；`+
+    `W39 报告该表仍与旧版 W36 逐字相同、疑为复制粘贴错误，未采用。`;
 }
 render();
 </script>
