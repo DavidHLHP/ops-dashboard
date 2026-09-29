@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>四周经营分析 · 4-Week Analysis</title>
+<style>
+  :root { --bg:#f4f6f8; --card:#fff; --ink:#1a1d21; --mut:#6b7280; --line:#e5e7eb;
+          --acc:#b3541e; --acc2:#0e7c5b; --acc3:#1d6f8b; --slate:#334155; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  .wrap { max-width:1180px; margin:0 auto; padding:20px 16px 48px; }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; justify-content:space-between;
+           margin-bottom:16px; }
+  h1 { font-size:22px; margin:0; }
+  h1 small { display:block; font-size:12px; color:var(--mut); font-weight:400; margin-top:4px; }
+  .hright { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .navlink { font-size:13px; color:var(--acc); text-decoration:none; border:1px solid var(--line);
+             background:#fff; padding:8px 14px; border-radius:8px; }
+  .seg { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .seg button { border:0; background:#fff; padding:8px 14px; font-size:13px; cursor:pointer; }
+  .seg button.active { background:var(--acc); color:#fff; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:12px; margin-bottom:16px; }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .kpi .cn { font-size:13px; color:var(--mut); }
+  .kpi .es { font-size:11px; color:#9ca3af; margin-top:2px; }
+  .kpi .v1 { font-size:22px; font-weight:700; margin-top:8px; }
+  .kpi .v2 { font-size:12px; color:var(--mut); margin-top:2px; }
+  .kpi.hl { border-left:4px solid var(--acc); }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px;
+           padding:16px; margin-bottom:16px; }
+  .panel h2 { font-size:15px; margin:0 0 4px; }
+  .panel .sub { font-size:12px; color:var(--mut); margin-bottom:12px; line-height:1.6; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { padding:9px 10px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap; }
+  th:first-child, td:first-child { text-align:left; }
+  th { font-size:12px; color:var(--mut); font-weight:600; }
+  th .es { display:block; font-weight:400; font-size:10px; color:#9ca3af; }
+  td .mx { display:block; font-size:11px; color:var(--mut); }
+  tr.total td { font-weight:700; background:#faf7f2; }
+  .up { color:var(--acc2); font-weight:600; } .down { color:#b91c1c; font-weight:600; }
+  .stackbar { height:26px; border-radius:8px; overflow:hidden; display:flex; margin:6px 0 2px; background:#eef0f2; }
+  .stackbar div { display:flex; align-items:center; justify-content:center; color:#fff;
+                  font-size:12px; font-weight:600; min-width:40px; }
+  .legend { display:flex; gap:18px; font-size:12px; color:var(--mut); flex-wrap:wrap; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
+  .dayrow { display:grid; grid-template-columns:118px 1fr 150px; gap:8px; align-items:center;
+            padding:5px 0; font-size:13px; border-bottom:1px dashed #f0f1f3; }
+  .dayrow:last-child { border-bottom:0; }
+  .daylab { color:var(--mut); white-space:nowrap; }
+  .dayval { text-align:right; white-space:nowrap; }
+  .dayval .mx { display:block; font-size:11px; color:var(--mut); }
+  .warn { background:#fef6ec; border:1px solid #f3d9ae; border-radius:8px; padding:10px 14px;
+          font-size:12px; color:#8a5a13; margin-top:12px; line-height:1.7; }
+  .foot { font-size:11px; color:var(--mut); margin-top:8px; line-height:1.8; }
+  @media (max-width:640px){ .kpi .v1{font-size:19px;} th,td{padding:7px 6px;font-size:12px;}
+    .dayrow{grid-template-columns:96px 1fr 118px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>四周经营分析<small>4-Week Analysis · W36–W39 · 8/31–9/27/2026</small></h1>
+    <div class="hright">
+      <a class="navlink" href="../">← 每日看板 Daily</a>
+      <div class="seg" id="curSeg">
+        <button data-cur="USD" class="active">USD 为主</button>
+        <button data-cur="MXN">MXN 为主</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="panel">
+    <h2>每周对比 <span style="font-weight:400;font-size:12px;color:#6b7280">Weekly comparison</span></h2>
+    <div class="sub">销售额为含税口径；人工成本为含 28% 税费口径；环比为与上一周比较</div>
+    <div style="overflow-x:auto"><table id="wtable"></table></div>
+  </div>
+
+  <div class="panel">
+    <h2>28 天每日销售额 <span style="font-weight:400;font-size:12px;color:#6b7280">Daily sales (with taxes)</span></h2>
+    <div class="sub" id="dchartSub"></div>
+    <div id="dchart"></div>
+    <div class="legend" id="dlegend" style="margin-top:8px"></div>
+  </div>
+
+  <div class="panel">
+    <h2>人工成本 vs 销售额 <span style="font-weight:400;font-size:12px;color:#6b7280">Labor cost vs sales</span></h2>
+    <div class="sub">柱状为销售额（含税）与人工成本（含税）；柱顶标注人工成本占比</div>
+    <div id="lchart"></div>
+  </div>
+
+  <div class="panel">
+    <h2>单点 À LA CARTE vs 任点任食 AYCE <span style="font-weight:400;font-size:12px;color:#6b7280">% of total sales</span></h2>
+    <div class="sub">仅 W37（9/7–9/13）有真实占比数据。W39 报告中的占比表与 W37 逐字相同，疑为复制粘贴错误，未采用。</div>
+    <div id="mixdays"></div>
+    <div class="legend" style="margin-top:10px">
+      <span><span class="dot" style="background:#b3541e"></span>单点 À LA CARTE</span>
+      <span><span class="dot" style="background:#0e7c5b"></span>任点任食 AYCE</span>
+      <span><span class="dot" style="background:#d1d5db"></span>其他（酒水等）</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>口碑 <span style="font-weight:400;font-size:12px;color:#6b7280">Ratings &amp; reviews</span></h2>
+    <div class="sub">OpenTable / Google 评分与社媒评论统计（来自周报）</div>
+    <div style="overflow-x:auto"><table id="rtable"></table></div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const DATA = window.__WEEKLY_DATA__;
+const FX = DATA.fx_mxn_per_usd || 17;
+let cur = "USD";
+const $ = id => document.getElementById(id);
+const fmtUSD = n => "$" + n.toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtMXN = n => "MX$" + n.toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtInt = n => n.toLocaleString("en-US");
+function money(mxn){ return cur==="USD" ? {p:fmtUSD(mxn/FX), s:fmtMXN(mxn)} : {p:fmtMXN(mxn), s:fmtUSD(mxn/FX)}; }
+function moneyCell(mxn){ const m=money(mxn); return m.p + '<span class="mx">'+m.s+'</span>'; }
+const WDAYS_CN = ["周一","周二","周三","周四","周五","周六","周日"];
+const WCOLORS = ["#b3541e","#c97b2d","#0e7c5b","#1d6f8b"];
+
+document.querySelectorAll("#curSeg button").forEach(b=>b.onclick=()=>{
+  cur=b.dataset.cur;
+  document.querySelectorAll("#curSeg button").forEach(x=>x.classList.toggle("active",x===b));
+  render();
+});
+
+function kpi(cn,es,mxn,hl,sub){
+  const m=money(mxn);
+  return `<div class="kpi${hl?" hl":""}"><div class="cn">${cn}</div><div class="es">${es}</div>`+
+    `<div class="v1">${m.p}</div><div class="v2">${m.s}</div>`+
+    (sub?`<div class="v2">${sub}</div>`:"")+`</div>`;
+}
+
+function render(){
+  const W = DATA.weeks, T = DATA.totals;
+  // ---- KPIs ----
+  const best = W.reduce((a,b)=>a.sales_total>b.sales_total?a:b);
+  const guests = W.filter(w=>w.guests).reduce((a,w)=>a+w.guests,0);
+  const gsales = W.filter(w=>w.guests).reduce((a,w)=>a+w.sales_total,0);
+  $("kpis").innerHTML =
+    kpi("四周含税总销售额","TOTAL SALES W/ TAXES",T.sales_mxn,true) +
+    kpi("四周人工成本（含税）","TOTAL LABOR COST",T.labor_mxn,true,`占销售额 ${T.labor_pct.toFixed(2)}%`) +
+    `<div class="kpi hl"><div class="cn">平均人工占比</div><div class="es">AVG LABOR % OF SALES</div>`+
+    `<div class="v1">${T.labor_pct.toFixed(2)}%</div><div class="v2">人工成本 ÷ 含税销售额</div></div>` +
+    kpi("最佳周 "+best.label,"BEST WEEK",best.sales_total,false,best.range) +
+    kpi("总客流（W38+W39）","GUESTS",guests,false) +
+    kpi("平均客单价","AVG TICKET",guests?gsales/guests:0,false,"W38–W39");
+
+  // ---- weekly table ----
+  let th = `<tr><th>周次<span class="es">WEEK</span></th><th>日期<span class="es">RANGE</span></th>`+
+    `<th>含税销售额<span class="es">SALES W/ TAX</span></th><th>人工成本（含税）<span class="es">LABOR W/ TAX</span></th>`+
+    `<th>人工占比<span class="es">LABOR %</span></th><th>环比销售<span class="es">WoW</span></th>`+
+    `<th>客流<span class="es">GUESTS</span></th><th>客单价<span class="es">AVG TICKET</span></th></tr>`;
+  let body = W.map((w,i)=>{
+    let wow = "—";
+    if(i>0){ const d=(w.sales_total-W[i-1].sales_total)/W[i-1].sales_total*100;
+      wow = `<span class="${d>=0?"up":"down"}">${d>=0?"+":""}${d.toFixed(2)}%</span>`; }
+    return `<tr><td>${w.label}</td><td>${w.range}</td><td>${moneyCell(w.sales_total)}</td>`+
+      `<td>${moneyCell(w.labor_total)}</td><td>${w.labor_pct.toFixed(2)}%</td><td>${wow}</td>`+
+      `<td>${w.guests?fmtInt(w.guests):"—"}</td><td>${w.guests?moneyCell(w.avg_ticket):"—"}</td></tr>`;
+  }).join("");
+  $("wtable").innerHTML = th + body +
+    `<tr class="total"><td>四周合计</td><td>8/31–9/27</td><td>${moneyCell(T.sales_mxn)}</td>`+
+    `<td>${moneyCell(T.labor_mxn)}</td><td>${T.labor_pct.toFixed(2)}%</td><td>—</td><td>${fmtInt(guests)}</td><td>${moneyCell(guests?gsales/guests:0)}</td></tr>`;
+
+  // ---- 28-day chart ----
+  const days=[]; W.forEach((w,wi)=>w.dates.forEach((d,i)=>days.push({d, v:w.sales[i], w:wi, i})));
+  const vals = days.map(x=>x.v/(cur==="USD"?FX:1));
+  const max = Math.max(...vals,1), n=days.length;
+  const WW = Math.max(n*40, 640), H=240, pad=40;
+  const bw = Math.min(26, (WW-pad*2)/n*0.66);
+  let svg = `<svg viewBox="0 0 ${WW} ${H}" style="width:100%;height:auto;display:block">`;
+  [0.25,0.5,0.75,1].forEach(f=>{ const y=H-34-(H-70)*f;
+    svg+=`<line x1="${pad}" y1="${y}" x2="${WW-8}" y2="${y}" stroke="#eef0f2"/>`; });
+  days.forEach((x,i)=>{
+    const h=(H-70)*(vals[i]/max), cw=(WW-pad*2)/n, bx=pad+cw*i+(cw-bw)/2, by=H-34-h;
+    const lab=(cur==="USD"?fmtUSD(vals[i]):fmtMXN(vals[i]));
+    svg+=`<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${WCOLORS[x.w]}"><title>${x.d} ${WDAYS_CN[x.i]}\n${lab}</title></rect>`;
+    if(x.i===6||x.i===0) svg+=`<text x="${(bx+bw/2).toFixed(1)}" y="${H-16}" font-size="9" text-anchor="middle" fill="#9ca3af">${x.d.slice(5)}</text>`;
+  });
+  svg+=`<text x="${pad}" y="14" font-size="11" fill="#6b7280">最高 ${cur==="USD"?fmtUSD(max):fmtMXN(max)}</text></svg>`;
+  $("dchart").innerHTML = svg;
+  $("dchartSub").textContent = `2026-08-31 ~ 2026-09-27 · 共 ${n} 天 · 主货币 ${cur}`;
+  $("dlegend").innerHTML = W.map((w,i)=>`<span><span class="dot" style="background:${WCOLORS[i]}"></span>${w.label} ${w.range}</span>`).join("");
+
+  // ---- labor vs sales ----
+  const smax = Math.max(...W.map(w=>w.sales_total),1);
+  const LW = 640, LH = 250, lpad = 46, gw=(LW-lpad-10)/W.length, bw2=Math.min(52, gw*0.32);
+  let s2 = `<svg viewBox="0 0 ${LW} ${LH}" style="width:100%;height:auto;display:block">`;
+  [0.25,0.5,0.75,1].forEach(f=>{ const y=LH-40-(LH-80)*f;
+    s2+=`<line x1="${lpad}" y1="${y}" x2="${LW-8}" y2="${y}" stroke="#eef0f2"/>`; });
+  W.forEach((w,i)=>{
+    const cx = lpad + gw*i + gw/2;
+    const hs=(LH-80)*(w.sales_total/smax), hl=(LH-80)*(w.labor_total/smax);
+    const ms=money(w.sales_total), ml=money(w.labor_total);
+    s2+=`<rect x="${(cx-bw2-3).toFixed(1)}" y="${(LH-40-hs).toFixed(1)}" width="${bw2.toFixed(1)}" height="${hs.toFixed(1)}" rx="4" fill="#b3541e"><title>${w.label} 销售额\n${ms.p} (${ms.s})</title></rect>`;
+    s2+=`<rect x="${(cx+3).toFixed(1)}" y="${(LH-40-hl).toFixed(1)}" width="${bw2.toFixed(1)}" height="${hl.toFixed(1)}" rx="4" fill="#334155"><title>${w.label} 人工成本\n${ml.p} (${ml.s})</title></rect>`;
+    s2+=`<text x="${cx.toFixed(1)}" y="${(LH-46-Math.max(hs,hl)).toFixed(1)}" font-size="11" font-weight="700" text-anchor="middle" fill="#334155">${w.labor_pct.toFixed(1)}%</text>`;
+    s2+=`<text x="${cx.toFixed(1)}" y="${LH-22}" font-size="11" text-anchor="middle" fill="#6b7280">${w.label}</text>`;
+    s2+=`<text x="${cx.toFixed(1)}" y="${LH-8}" font-size="10" text-anchor="middle" fill="#9ca3af">${w.range}</text>`;
+  });
+  s2+=`</svg><div class="legend" style="margin-top:6px"><span><span class="dot" style="background:#b3541e"></span>销售额（含税）</span><span><span class="dot" style="background:#334155"></span>人工成本（含税）</span></div>`;
+  $("lchart").innerHTML = s2;
+
+  // ---- a la carte mix (W37) ----
+  const mix = DATA.alacarte[0].days;
+  $("mixdays").innerHTML = mix.map((d,i)=>{
+    const other = Math.max(0, 100 - d.alacarte - d.ayce);
+    return `<div class="dayrow"><div class="daylab">${d.date.slice(5)} ${WDAYS_CN[i]}</div>`+
+      `<div class="stackbar"><div style="width:${d.alacarte}%;background:#b3541e">${d.alacarte}%</div>`+
+      `<div style="width:${d.ayce}%;background:#0e7c5b">${d.ayce}%</div>`+
+      (other>4?`<div style="width:${other}%;background:#d1d5db;color:#6b7280">${other.toFixed(0)}%</div>`:`<div style="width:${other}%;background:#d1d5db"></div>`)+
+      `</div><div class="dayval">单点 ${d.alacarte}%<span class="mx">AYCE ${d.ayce}%</span></div></div>`;
+  }).join("");
+
+  // ---- ratings ----
+  const R = [["W37","9/7–9/13","4.5 (21)","4.6 (235)","—"],
+             ["W38","9/14–9/20","4.5 (24)","4.7 (259)","38（好评 37 / 差评 1）"],
+             ["W39","9/21–9/27","4.6 (27)","4.7 (299)","41（好评 37 / 差评 4）"]];
+  $("rtable").innerHTML = `<tr><th>周次</th><th>OpenTable<span class="es">RATING</span></th><th>Google<span class="es">RATING</span></th><th>社媒评论<span class="es">REVIEWS</span></th></tr>`+
+    R.map(r=>`<tr><td>${r[0]}<span class="mx">${r[1]}</span></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join("");
+
+  $("foot").innerHTML =
+    `汇率 Rate: 1 USD = ${FX} MXN · 数据来源：W36–W39 周报 PDF（Happy Lamb México）。<br>`+
+    `销售额为含税口径（SALES WITH / INCLUDE TAXES）；人工成本 = 税前人工 × 1.28（含 28% 税费）。<br>`+
+    `数据备注：W38 人工成本采用 W39 对比页修正值 201,035（W38 本期报告为 201,435）；`+
+    `单点/AYCE 占比仅 W37 为真实数据，W39 报告该表与 W37 逐字相同、疑为复制粘贴错误，未采用。`;
+}
+render();
+</script>
+</body>
+</html>
