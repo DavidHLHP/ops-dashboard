@@ -121,7 +121,7 @@
   <div class="foot" id="foot"></div>
 </div>
 
-<script src="data.js"></script>
+<script src="data.js?v=20260928c"></script>
 <script>
 const DATA = window.__WEEKLY_DATA__;
 const FX = DATA.fx_mxn_per_usd || 17;
@@ -250,9 +250,10 @@ function render(){
   mixRender();
 
   // ---- guest distribution (W38 / W39) ----
-  let gxIdx = DATA.guest_mix.length - 1;
+  let gxIdx = (DATA.guest_mix||[]).length - 1;
   const GXC = ["#b3541e","#0e7c5b","#334155","#7c3aed","#0369a1","#b91c1c"];
   function gxRender(){
+    if(!DATA.guest_mix||!DATA.guest_mix.length) return;
     const g = DATA.guest_mix[gxIdx];
     let html = `<div class="dayrow" style="font-weight:700"><div class="daylab">本周总客流<br><span class="es">PX TOTAL DE LA SEMANA</span></div>`+
       `<div class="dayval" style="font-size:16px">${fmtInt(g.total)}</div></div>`;
