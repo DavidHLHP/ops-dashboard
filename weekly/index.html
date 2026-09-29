@@ -94,7 +94,7 @@
 
   <div class="panel">
     <h2>单点 À LA CARTE vs 任点任食 AYCE <span style="font-weight:400;font-size:12px;color:#6b7280">% of total sales</span></h2>
-    <div class="sub">W36、W37、W38 有真实占比数据，可切换查看；W39 真实数据待补充。⚠ 标记为报告数据疑似有误。</div>
+    <div class="sub">W36、W37、W38、W39 四周真实占比数据，可切换查看。⚠ 标记为报告数据疑似有误。</div>
     <div class="seg" id="mixSeg" style="margin-bottom:10px"></div>
     <div id="mixdays"></div>
     <div class="legend" style="margin-top:10px">
@@ -216,13 +216,9 @@ function render(){
   s2+=`</svg><div class="legend" style="margin-top:6px"><span><span class="dot" style="background:#b3541e"></span>销售额（税前）</span><span><span class="dot" style="background:#334155"></span>人工成本（含税）</span></div>`;
   $("lchart").innerHTML = s2;
 
-  // ---- a la carte mix (W36 / W37 / W38, W39 pending) ----
+  // ---- a la carte mix (W36 / W37 / W38 / W39) ----
   let mixIdx = DATA.alacarte.length - 1;
-  const MIX_PENDING_LABEL = "W39 9/21–9/27（待补充）";
   function mixRender(){
-    if (mixIdx >= DATA.alacarte.length) {
-      $("mixdays").innerHTML = '<div class="empty">W39 单点 / AYCE 真实占比待补充。<br><span style="font-size:12px">W39 周报中的占比表百分比与 W36 旧表逐字相同（仅 TOTAL SALES 列为 W39 数据），为复制粘贴错误，未采用；<br>每日 Corte Z 日报也不含单点/AYCE 拆分。请向 Paulina 索取 W39 真实数据，拿到后即刻补上。</span></div>';
-    } else {
     const wk = DATA.alacarte[mixIdx];
     function dayRow(lab, al, ay, bold){
       const sum = al + ay, bad = sum > 100;
@@ -240,10 +236,8 @@ function render(){
     html += dayRow("周均", al, ay, true);
     $("mixdays").innerHTML = html;
     $("mixSeg").innerHTML = DATA.alacarte.map((w,i)=>
-      `<button data-i="${i}" class="${i===mixIdx?'active':''}">${w.label} ${w.range}</button>`).join("")+
-      `<button data-i="${DATA.alacarte.length}" class="${mixIdx===DATA.alacarte.length?'active':''}" style="opacity:.55">${MIX_PENDING_LABEL}</button>`;
+      `<button data-i="${i}" class="${i===mixIdx?'active':''}">${w.label} ${w.range}</button>`).join("");
     $("mixSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{mixIdx=+b.dataset.i;mixRender();});
-    }
   }
   mixRender();
 
@@ -261,7 +255,7 @@ function render(){
     `单点/AYCE 占比：W36 为最新修正版（-4 版，周三单点由 85.00% 修正为 0.85%，单点周均 1.78%）、W37 为修正数据、W38 为新增`+
     `（W37 旧版误用 W36 的表，新版已修正；W37 报告周均值 1.46% 与其每日数值不符，周均按每日数值重算为 2.04%）；`+
     `W36 表周一 TOTAL SALES（184,239.95）与人工销售页（56,413.60）仍不一致，AYCE 周均值 78.68% 与每日数值简单平均（79.66%）不符；`+
-    `W39 报告该表仍与旧版 W36 逐字相同、疑为复制粘贴错误，未采用（保留现状）。`;
+    `W39 单点/AYCE 占比按报告原值采用（百分比两列与 W36 旧表逐字相同，疑为复制粘贴未更新，待与 Paulina 核实）。`;
 }
 render();
 </script>
