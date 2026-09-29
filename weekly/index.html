@@ -94,7 +94,8 @@
 
   <div class="panel">
     <h2>单点 À LA CARTE vs 任点任食 AYCE <span style="font-weight:400;font-size:12px;color:#6b7280">% of total sales</span></h2>
-    <div class="sub">仅 W37（9/7–9/13）有真实占比数据。W39 报告中的占比表与 W37 逐字相同，疑为复制粘贴错误，未采用。</div>
+    <div class="sub">W36、W37、W38 有真实占比数据，可切换查看。W39 报告中的占比表与 W36 逐字相同，疑为复制粘贴错误，未采用。</div>
+    <div class="seg" id="mixSeg" style="margin-bottom:10px"></div>
     <div id="mixdays"></div>
     <div class="legend" style="margin-top:10px">
       <span><span class="dot" style="background:#b3541e"></span>单点 À LA CARTE</span>
@@ -215,16 +216,28 @@ function render(){
   s2+=`</svg><div class="legend" style="margin-top:6px"><span><span class="dot" style="background:#b3541e"></span>销售额（税前）</span><span><span class="dot" style="background:#334155"></span>人工成本（含税）</span></div>`;
   $("lchart").innerHTML = s2;
 
-  // ---- a la carte mix (W37) ----
-  const mix = DATA.alacarte[0].days;
-  $("mixdays").innerHTML = mix.map((d,i)=>{
-    const other = Math.max(0, 100 - d.alacarte - d.ayce);
-    return `<div class="dayrow"><div class="daylab">${d.date.slice(5)} ${WDAYS_CN[i]}</div>`+
-      `<div class="stackbar"><div style="width:${d.alacarte}%;background:#b3541e">${d.alacarte}%</div>`+
-      `<div style="width:${d.ayce}%;background:#0e7c5b">${d.ayce}%</div>`+
-      (other>4?`<div style="width:${other}%;background:#d1d5db;color:#6b7280">${other.toFixed(0)}%</div>`:`<div style="width:${other}%;background:#d1d5db"></div>`)+
-      `</div><div class="dayval">单点 ${d.alacarte}%<span class="mx">AYCE ${d.ayce}%</span></div></div>`;
-  }).join("");
+  // ---- a la carte mix (W36 / W37 / W38) ----
+  let mixIdx = DATA.alacarte.length - 1;
+  function mixRender(){
+    const wk = DATA.alacarte[mixIdx];
+    function dayRow(lab, al, ay, bold){
+      const other = Math.max(0, 100 - al - ay);
+      return `<div class="dayrow"${bold?' style="border-bottom:0;font-weight:700"':""}><div class="daylab">${lab}</div>`+
+        `<div class="stackbar"><div style="width:${al}%;background:#b3541e">${al.toFixed(2)}%</div>`+
+        `<div style="width:${ay}%;background:#0e7c5b">${ay.toFixed(2)}%</div>`+
+        (other>4?`<div style="width:${other}%;background:#d1d5db;color:#6b7280">${other.toFixed(0)}%</div>`:`<div style="width:${other}%;background:#d1d5db"></div>`)+
+        `</div><div class="dayval">单点 ${al.toFixed(2)}%<span class="mx">AYCE ${ay.toFixed(2)}%</span></div></div>`;
+    }
+    let html = wk.days.map((d,i)=>dayRow(d.date.slice(5)+" "+WDAYS_CN[i], d.alacarte, d.ayce)).join("");
+    const al = wk.days.reduce((a,d)=>a+d.alacarte,0)/wk.days.length;
+    const ay = wk.days.reduce((a,d)=>a+d.ayce,0)/wk.days.length;
+    html += dayRow("周均", al, ay, true);
+    $("mixdays").innerHTML = html;
+    $("mixSeg").innerHTML = DATA.alacarte.map((w,i)=>
+      `<button data-i="${i}" class="${i===mixIdx?'active':''}">${w.label} ${w.range}</button>`).join("");
+    $("mixSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{mixIdx=+b.dataset.i;mixRender();});
+  }
+  mixRender();
 
   // ---- ratings ----
   const R = [["W37","9/7–9/13","4.5 (21)","4.6 (235)","—"],
@@ -237,7 +250,8 @@ function render(){
     `汇率 Rate: 1 USD = ${FX} MXN · 数据来源：W36–W39 周报 PDF（Happy Lamb México）。<br>`+
     `销售额为税前口径（周报含税数字 ÷ 1.16 换算，16% 增值税）；人工成本 = 税前人工 × 1.28（含 28% 税费）。<br>`+
     `数据备注：W38 人工成本采用 W39 对比页修正值 201,035（W38 本期报告为 201,435）；`+
-    `单点/AYCE 占比仅 W37 为真实数据，W39 报告该表与 W37 逐字相同、疑为复制粘贴错误，未采用。`;
+    `单点/AYCE 占比：W36、W37、W38 为真实数据（W37 旧版误用 W36 的表，新版已修正；W37 报告周均值 1.46% 与其每日数值不符，周均按每日数值重算为 2.04%）；`+
+    `W39 报告该表仍与 W36 逐字相同、疑为复制粘贴错误，未采用。`;
 }
 render();
 </script>
