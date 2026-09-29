@@ -107,7 +107,8 @@
     <div class="foot">
       总折扣 TOTAL DESCUENTOS = 折扣明细（食物折扣 + 酒水折扣 + 其他折扣）；招待 TOTAL CORTESÍA = 招待免单（食物 + 酒水 + 其他）。<br>
       现金差异 SOBRANTE(+)/FALTANTE(-)：正数为长款、负数为短款，红色预警。<br>
-      每单消费 CUENTA PROMEDIO = 不含税净收入 ÷ 订单数；人均消费 CONSUMO PROMEDIO = 不含税净收入 ÷ 客流数。
+      每单消费 CUENTA PROMEDIO = 不含税净收入 ÷ 订单数；人均消费 CONSUMO PROMEDIO = 不含税净收入 ÷ 客流数。<br>
+      含税总收入 VENTAS CON IMPUESTOS =（不含税收入 COMEDOR − 折扣）× 1.16：增值税按扣完折扣后的净收入计征，因此「不含税收入 + 增值税」≠ 含税总收入，差额即为折扣。
     </div>
   </div>
   <div class="foot" id="updatedAt"></div>
@@ -310,7 +311,7 @@ ${lab}</title></rect>`;
     `<td>${fmtInt(a.co)}</td><td>${moneyCell(a.ticket)}</td></tr>`;
   $("tbl").innerHTML=th+body+tfoot;
   renderWeekly();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-09-28 22:12 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-09-29 09:59 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: MTD
