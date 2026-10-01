@@ -35,6 +35,9 @@
   .kpi .v1 { font-size:22px; font-weight:700; margin-top:8px; }
   .kpi .v2 { font-size:12px; color:var(--mut); margin-top:2px; }
   .kpi.hl { border-left:4px solid var(--acc); }
+  html, body { overflow-x: clip; }
+  .panel.widepanel { width: min(calc(100vw - 32px), 1900px);
+    margin-left: calc(50% - min(50vw - 16px, 950px)); }
   .panel { background:var(--card); border:1px solid var(--line); border-radius:12px;
            padding:16px; margin-bottom:16px; }
   .panel h2 { font-size:15px; margin:0 0 4px; }
@@ -100,7 +103,7 @@
     <div style="overflow-x:auto;margin-top:10px"><table id="wtable"></table></div>
   </div>
 
-  <div class="panel">
+  <div class="panel widepanel">
     <h2>每月对比 <span style="font-weight:400;font-size:12px;color:#6b7280">Monthly comparison</span></h2>
     <div class="sub">缺失日期不计为零；环比按<b>整月总数</b>计算 · 每单消费 = 税前销售额 ÷ 订单数 · 人均消费 = 税前销售额 ÷ 客流数 · 人工成本(估算) = 周人工成本按天拆分到自然月（含管理层），无周报覆盖的天数按该月已有周的日均人工推算</div>
     <div id="mchart"></div>
@@ -115,7 +118,7 @@
     <div style="overflow-x:auto;margin-top:10px"><table id="gxtable"></table></div>
   </div>
 
-  <div class="panel">
+  <div class="panel widepanel">
     <h2>每日明细 <span style="font-weight:400;font-size:12px;color:#6b7280">Daily detail</span></h2>
     <div class="sub">金额双币种显示 · 汇率 1 USD = 17 MXN · 每单消费/人均消费 = 不含税收入 COMEDOR ÷ 订单数/客流数（报告原值为按 VENTA NETA 计算）</div>
     <div style="overflow-x:auto"><table id="tbl"></table></div>
@@ -452,7 +455,7 @@ ${lab}</title></rect>`;
   renderWeekly();
   renderMonthly();
   renderGuestMix();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 15:47 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 16:25 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: all data (October has no reports yet, MTD would be empty)
