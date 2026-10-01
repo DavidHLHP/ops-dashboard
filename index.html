@@ -194,18 +194,28 @@ function agg(rows){
     ticket: cu? vn/cu:0, percap: co? vn/co:0, n:rows.length };
 }
 
-function kpi(cn,es,mxn,hl,count,pct){
+function kpi(cn,es,mxn,hl,count,pct,mom){
   const m = count? null : money(mxn);
   const pl = (pct!=null && !count) ? `<div class="v2">占不含税收入 ${pct.toFixed(1)}%</div>` : "";
   return `<div class="kpi${hl?" hl":""}"><div class="cn">${cn}</div><div class="es">${es}</div>`+
     (count? `<div class="v1">${fmtInt(mxn)}</div>`
-           : `<div class="v1">${m.p}</div>${pl}<div class="v2">${m.s}</div>`)+`</div>`;
+           : `<div class="v1">${m.p}</div>${pl}<div class="v2">${m.s}</div>`)+(mom||"")+`</div>`;
 }
 
-function kpiSF(mxn){
+function kpiSF(mxn,mom){
   const m=money(mxn), c = mxn<0 ? "var(--warn)" : "var(--acc2)";
   return `<div class="kpi"><div class="cn">现金差异</div><div class="es">SOBRANTE (+) / FALTANTE (-)</div>`+
-    `<div class="v1" style="color:${c}">${m.p}</div><div class="v2">${m.s}</div></div>`;
+    `<div class="v1" style="color:${c}">${m.p}</div><div class="v2">${m.s}</div>`+(mom||"")+`</div>`;
+}
+
+// 上月同期：起止日期整体平移一个月（跨月末自动截断）
+function shiftMonth(iso,delta){
+  if(!iso) return "";
+  let [y,m,d]=iso.split("-").map(Number);
+  m+=delta;
+  while(m<1){m+=12;y--;} while(m>12){m-=12;y++;}
+  d=Math.min(d,new Date(y,m,0).getDate());
+  return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 }
 
 function renderWeekly(){
@@ -343,6 +353,25 @@ function renderGuestMix(){
 
 function render(){
   const rows=filtered(), a=agg(rows);
+  // ---- 上月同期对比（随所选区间联动） ----
+  const _s=$("dStart").value||"", _e=$("dEnd").value||"";
+  const _prows=(_s&&_e)?DATA.records.filter(r=>r.store===storeSel.value&&r.date>=shiftMonth(_s,-1)&&r.date<=shiftMonth(_e,-1)):[];
+  const _pa=agg(_prows), _dn=rows.length, _pn=_prows.length, _has=_pn>0;
+  const _avg=(v,n)=>n?v/n:0;
+  const _lbl=_has?(_dn===_pn?"环比上月同期":"环比上月同期·按日均"):"";
+  const _mom=(c,p,good)=>{
+    if(!_has||!p) return "";
+    const pct=(c-p)/Math.abs(p)*100;
+    const col=good==="neutral"?"#6b7280":pct>0.05?"var(--acc2)":pct<-0.05?"var(--warn)":"#6b7280";
+    const sg=pct>0.05?"▲":pct<-0.05?"▼":"–";
+    return `<div class="v2" style="color:${col};font-weight:600">${_lbl} ${sg} ${Math.abs(pct).toFixed(1)}%</div>`;
+  };
+  const _momSF=()=>{
+    if(!_has) return "";
+    const d=_avg(a.sf,_dn)-_avg(_pa.sf,_pn), m=money(d);
+    const col=d>0.005?"var(--acc2)":d<-0.005?"var(--warn)":"#6b7280";
+    return `<div class="v2" style="color:${col};font-weight:600">${_lbl} ${d>0.005?"+":""}${m.p}</div>`;
+  };
   const box=$("kpis");
   if(!rows.length){ box.innerHTML=""; $("chart").innerHTML='<div class="empty">所选区间暂无数据</div>';
     $("tbl").innerHTML=""; $("mixbar").innerHTML=""; $("mixlegend").innerHTML=""; $("chartSub").textContent="";
@@ -350,19 +379,19 @@ function render(){
     $("mchart").innerHTML=""; $("mtable").innerHTML="";
     $("gxchart").innerHTML=""; $("gxtable").innerHTML=""; return; }
   box.innerHTML =
-    kpi("含税总收入","VENTAS CON IMPUESTOS",a.vci,true) +
-    kpi("不含税收入","COMEDOR",a.comedor,true) +
-    kpi("食物","ALIMENTOS",a.alim,false,false,a.comedor?a.alim/a.comedor*100:0) +
-    kpi("酒水","BEBIDAS",a.beb,false,false,a.comedor?a.beb/a.comedor*100:0) +
-    kpi("增值税 16%","IMPUESTO",a.imp) +
-    kpi("总折扣","TOTAL DESCUENTOS",a.td) +
-    kpi("招待免单","TOTAL CORTESÍA",a.cor) +
-    kpi("小费","PROPINAS",a.prop) +
-    kpiSF(a.sf) +
-    kpi("订单数","CUENTAS",a.cu,false,true) +
-    kpi("客流数","COMENSALES",a.co,false,true) +
-    kpi("每单消费","CUENTA PROMEDIO",a.ticket) +
-    kpi("人均消费","CONSUMO PROMEDIO",a.percap);
+    kpi("含税总收入","VENTAS CON IMPUESTOS",a.vci,true,false,null,_mom(_avg(a.vci,_dn),_avg(_pa.vci,_pn),"up")) +
+    kpi("不含税收入","COMEDOR",a.comedor,true,false,null,_mom(_avg(a.comedor,_dn),_avg(_pa.comedor,_pn),"up")) +
+    kpi("食物","ALIMENTOS",a.alim,false,false,a.comedor?a.alim/a.comedor*100:0,_mom(_avg(a.alim,_dn),_avg(_pa.alim,_pn),"up")) +
+    kpi("酒水","BEBIDAS",a.beb,false,false,a.comedor?a.beb/a.comedor*100:0,_mom(_avg(a.beb,_dn),_avg(_pa.beb,_pn),"up")) +
+    kpi("增值税 16%","IMPUESTO",a.imp,false,false,null,_mom(_avg(a.imp,_dn),_avg(_pa.imp,_pn),"neutral")) +
+    kpi("总折扣","TOTAL DESCUENTOS",a.td,false,false,null,_mom(_avg(a.td,_dn),_avg(_pa.td,_pn),"neutral")) +
+    kpi("招待免单","TOTAL CORTESÍA",a.cor,false,false,null,_mom(_avg(a.cor,_dn),_avg(_pa.cor,_pn),"neutral")) +
+    kpi("小费","PROPINAS",a.prop,false,false,null,_mom(_avg(a.prop,_dn),_avg(_pa.prop,_pn),"up")) +
+    kpiSF(a.sf,_momSF()) +
+    kpi("订单数","CUENTAS",a.cu,false,true,null,_mom(_avg(a.cu,_dn),_avg(_pa.cu,_pn),"up")) +
+    kpi("客流数","COMENSALES",a.co,false,true,null,_mom(_avg(a.co,_dn),_avg(_pa.co,_pn),"up")) +
+    kpi("每单消费","CUENTA PROMEDIO",a.ticket,false,false,null,_mom(a.ticket,_pa.ticket,"up")) +
+    kpi("人均消费","CONSUMO PROMEDIO",a.percap,false,false,null,_mom(a.percap,_pa.percap,"up"));
 
   // chart
   const vals=rows.map(r=>r.ventas_con_impuestos_mxn/(cur==="USD"?FX:1));
@@ -419,7 +448,7 @@ ${lab}</title></rect>`;
   renderWeekly();
   renderMonthly();
   renderGuestMix();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 13:55 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 14:02 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: all data (October has no reports yet, MTD would be empty)
