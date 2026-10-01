@@ -105,7 +105,8 @@
 
   <div class="panel widepanel">
     <h2>每月对比 <span style="font-weight:400;font-size:12px;color:#6b7280">Monthly comparison</span></h2>
-    <div class="sub">缺失日期不计为零；环比按<b>整月总数</b>计算 · 每单消费 = 税前销售额 ÷ 订单数 · 人均消费 = 税前销售额 ÷ 客流数 · 人工成本(估算) = 周人工成本按天拆分到自然月（含管理层），无周报覆盖的天数按该月已有周的日均人工推算</div>
+    <div class="sub">缺失日期不计为零；环比按<b>整月总数</b>计算 · 每单消费 = 税前销售额 ÷ 订单数 · 人均消费 = 税前销售额 ÷ 客流数 · 人工成本(估算) = 周人工成本按天拆分到自然月（含管理层），无周报覆盖的天数按该月已有周的日均人工推算 · 上方曲线图横轴为日期（1–31日），可切换指标对比各月</div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px"><label style="font-size:13px;color:#6b7280">对比指标 <select id="mmetric" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px"></select></label></div>
     <div id="mchart"></div>
     <div style="overflow-x:auto;margin-top:10px"><table id="mtable"></table></div>
   </div>
@@ -267,26 +268,74 @@ ${ml.p} (${ml.s})</title></rect>`;
   $("wtable").innerHTML=th+body;
 }
 
+const MMETRICS=[
+  {key:"comedor", cn:"税前销售额", es:"COMEDOR", money:true},
+  {key:"comensales", cn:"客流", es:"COMENSALES", money:false},
+  {key:"percap", cn:"人均消费", es:"PER CAPITA", money:true},
+  {key:"ticket", cn:"每单消费", es:"TICKET PROM.", money:true},
+];
+const MCOLORS=["#b3541e","#0e7c5b","#334155","#7c3aed","#0284c7","#b45309","#be123c","#65a30d"];
+let mmetric="comedor";
+function mDaily(){
+  const byM={};
+  DATA.records.filter(r=>r.store==="mexico-polanco").forEach(r=>{
+    const ym=r.date.slice(0,7), day=+r.date.slice(8,10);
+    (byM[ym]=byM[ym]||{ym:ym,pts:[]}).pts.push({day:day,
+      comedor:r.comedor_mxn||0, comensales:r.comensales||0,
+      ticket:r.cuentas? (r.comedor_mxn||0)/r.cuentas:0,
+      percap:r.comensales? (r.comedor_mxn||0)/r.comensales:0});
+  });
+  return Object.values(byM).sort((a,b)=>a.ym<b.ym?-1:1)
+    .map(o=>{ o.pts.sort((a,b)=>a.day-b.day); return o; });
+}
+function renderMChart(){
+  const metric=MMETRICS.find(m=>m.key===mmetric);
+  const months=mDaily();
+  const sel=$("mmetric");
+  if(sel && !sel.options.length){
+    MMETRICS.forEach(mt=>{ const o=document.createElement("option");
+      o.value=mt.key; o.textContent=mt.cn+" "+mt.es; sel.appendChild(o); });
+    sel.value=mmetric;
+    sel.onchange=()=>{ mmetric=sel.value; renderMChart(); };
+  }
+  const allV=months.flatMap(m=>m.pts.map(pt=>pt[metric.key]));
+  const vmax=Math.max.apply(null, allV.concat([1]));
+  const W=880,H=300,pl=58,pr=14,pt=16,pb=32,iw=W-pl-pr,ih=H-pt-pb;
+  const X=d=>pl+iw*(d-1)/30, Y=v=>pt+ih*(1-v/vmax);
+  const cf=v=> metric.money
+    ? (v>=1e6? "$"+(v/1e6).toFixed(1)+"M" : v>=1e3? "$"+(v/1e3).toFixed(0)+"k" : "$"+Math.round(v))
+    : ""+Math.round(v);
+  let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">';
+  for(let i=0;i<=4;i++){ const v=vmax*i/4, y=Y(v);
+    s+='<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(1)+'" stroke="#eef0f2"/>'
+      +'<text x="'+(pl-8)+'" y="'+(y+4).toFixed(1)+'" font-size="11" text-anchor="end" fill="#9ca3af">'+cf(v)+'</text>'; }
+  [1,5,10,15,20,25,31].forEach(d=>{
+    s+='<text x="'+X(d).toFixed(1)+'" y="'+(H-12)+'" font-size="11" text-anchor="middle" fill="#9ca3af">'+d+'</text>'; });
+  months.forEach((m,mi)=>{
+    const col=MCOLORS[mi%MCOLORS.length];
+    let seg=[];
+    const flush=()=>{ if(seg.length>1){
+      s+='<polyline points="'+seg.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ")+'" fill="none" stroke="'+col+'" stroke-width="2.5"/>'; } seg=[]; };
+    let prev=0;
+    m.pts.forEach(pt=>{ if(pt.day-prev>1) flush(); seg.push([X(pt.day), Y(pt[metric.key])]); prev=pt.day; });
+    flush();
+    m.pts.forEach(pt=>{ const v=pt[metric.key];
+      const vv=metric.money? money(v).p : fmtInt(v);
+      s+='<circle cx="'+X(pt.day).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.5" fill="'+col+'"><title>'+m.ym+'-'+String(pt.day).padStart(2,"0")+' '+metric.cn+' | '+vv+'</title></circle>'; });
+  });
+  let lx=pl;
+  months.forEach((m,mi)=>{ const col=MCOLORS[mi%MCOLORS.length];
+    s+='<g><rect x="'+lx+'" y="0" width="10" height="10" rx="2" fill="'+col+'"/>'
+      +'<text x="'+(lx+14)+'" y="10" font-size="12" fill="#1a1d21">'+m.ym+'</text></g>';
+    lx+=14+m.ym.length*7+20; });
+  s+='</svg>';
+  $("mchart").innerHTML=s;
+}
+
 function renderMonthly(){
   if(!MONTHLY || !MONTHLY.length){ $("mchart").innerHTML=""; $("mtable").innerHTML=""; return; }
-  // bar chart: daily-average COMEDOR per month
-  const mmax=Math.max(...MONTHLY.map(m=>m.davg_com),1);
-  const MW=640, MH=210, mpad=46, mgw=(MW-mpad-10)/MONTHLY.length, mbw=Math.min(120, mgw*0.5);
-  let s=`<svg viewBox="0 0 ${MW} ${MH}" style="width:100%;height:auto;display:block">`;
-  [0.25,0.5,0.75,1].forEach(f=>{ const y=MH-36-(MH-76)*f;
-    s+=`<line x1="${mpad}" y1="${y}" x2="${MW-8}" y2="${y}" stroke="#eef0f2"/>`; });
-  MONTHLY.forEach((m,i)=>{
-    const cx=mpad+mgw*i+mgw/2, h=(MH-76)*(m.davg_com/mmax);
-    const mv=money(m.davg_com);
-    s+=`<rect x="${(cx-mbw/2).toFixed(1)}" y="${(MH-36-h).toFixed(1)}" width="${mbw.toFixed(1)}" height="${h.toFixed(1)}" rx="6" fill="#b3541e"><title>${m.ym} 日均不含税收入
-${mv.p} (${mv.s})
-数据覆盖 ${m.days}/${m.expected} 天</title></rect>`;
-    s+=`<text x="${cx.toFixed(1)}" y="${(MH-42-h).toFixed(1)}" font-size="12" font-weight="700" text-anchor="middle" fill="#1a1d21">${mv.p}</text>`;
-    s+=`<text x="${cx.toFixed(1)}" y="${MH-18}" font-size="12" text-anchor="middle" fill="#6b7280">${m.ym}</text>`;
-    s+=`<text x="${cx.toFixed(1)}" y="${MH-4}" font-size="10" text-anchor="middle" fill="#9ca3af">${m.days}/${m.expected} 天</text>`;
-  });
-  s+=`</svg>`;
-  $("mchart").innerHTML=s;
+  // line chart: daily values per month (x = day of month 1-31), metric selectable
+  renderMChart();
   // table
   let th="<tr><th>月份<span class='es'>MONTH</span></th><th>数据覆盖<span class='es'>COVERAGE</span></th>"+
     "<th>含税总收入<span class='es'>VCI TOTAL</span></th><th>日均不含税<span class='es'>COMEDOR/DAY</span></th>"+
@@ -455,7 +504,7 @@ ${lab}</title></rect>`;
   renderWeekly();
   renderMonthly();
   renderGuestMix();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 16:25 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 16:45 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: all data (October has no reports yet, MTD would be empty)
