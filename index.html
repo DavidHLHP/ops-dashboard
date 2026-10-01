@@ -101,6 +101,14 @@
   </div>
 
   <div class="panel">
+    <h2>客群族裔 <span style="font-weight:400;font-size:12px;color:#6b7280">Guest mix · 周报数据 Nacionalidad</span></h2>
+    <div class="sub">每周周报客源国籍构成 · 百分比按该周总客流计算</div>
+    <div id="gxchart"></div>
+    <div class="legend" style="margin-top:6px"><span><span class="dot" style="background:#b3541e"></span>墨西哥本地客 MEXICANOS</span><span><span class="dot" style="background:#0e7c5b"></span>亚裔外国客 EXTRANJEROS ASIÁTICOS</span><span><span class="dot" style="background:#334155"></span>其他外国客 EXTRANJEROS</span></div>
+    <div style="overflow-x:auto;margin-top:10px"><table id="gxtable"></table></div>
+  </div>
+
+  <div class="panel">
     <h2>每日明细 <span style="font-weight:400;font-size:12px;color:#6b7280">Daily detail</span></h2>
     <div class="sub">金额双币种显示 · 汇率 1 USD = 17 MXN</div>
     <div style="overflow-x:auto"><table id="tbl"></table></div>
@@ -118,6 +126,7 @@
 <script>
 const DATA = window.__DASH_DATA__;
 const WEEKLY = [{"label": "W36", "range": "8/31–9/6", "vci": 1233756.1, "comedor": 1075329.3, "cuentas": 393, "comensales": 1211, "labor": 329837.0, "labor_pct": 30.67, "mgmt_mxn": 73084.36}, {"label": "W37", "range": "9/7–9/13", "vci": 1527410.9, "comedor": 1327124.14, "cuentas": 399, "comensales": 1299, "labor": 331900.36, "labor_pct": 25.01, "mgmt_mxn": 73084.36}, {"label": "W38", "range": "9/14–9/20", "vci": 1250246.0, "comedor": 1089795.68, "cuentas": 391, "comensales": 1231, "labor": 330409.16, "labor_pct": 30.32, "mgmt_mxn": 73084.36}, {"label": "W39", "range": "9/21–9/27", "vci": 1323423.6, "comedor": 1146999.99, "cuentas": 381, "comensales": 1251, "labor": 314797.0, "labor_pct": 27.45, "mgmt_mxn": 73084.36}];
+const GUESTMIX = [{"week": 38, "label": "W38", "range": "9/14–9/20", "total": 1207, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 682}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 855}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 322}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 23}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 603}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 322}, {"cn": "电话预订", "es": "TELÉFONO", "n": 150}, {"cn": "员工", "es": "STAFF", "n": 84}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 407}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 130}, {"cn": "包间", "es": "PRIVADOS", "n": 75}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 42}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 27}]}]}, {"week": 39, "label": "W39", "range": "9/21–9/27", "total": 1244, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 719}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 794}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 318}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 44}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 744}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 160}, {"cn": "电话预订", "es": "TELÉFONO", "n": 158}, {"cn": "员工", "es": "STAFF", "n": 150}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 457}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 100}, {"cn": "包间", "es": "PRIVADOS", "n": 89}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 32}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 0}]}]}];
 const FX = DATA.fx_mxn_per_usd || 17;
 let cur = "USD"; // primary currency
 
@@ -230,11 +239,44 @@ ${ml.p} (${ml.s})</title></rect>`;
     vci:WEEKLY.reduce((a,w)=>a+w.vci,0), com:WEEKLY.reduce((a,w)=>a+w.comedor,0),
     cu:WEEKLY.reduce((a,w)=>a+w.cuentas,0), co:WEEKLY.reduce((a,w)=>a+w.comensales,0),
     labor:WEEKLY.reduce((a,w)=>a+w.labor,0) };
-  body+=`<tr class="total"><td>四周合计</td><td>W36–W39</td><td>${moneyCell(T.vci)}</td>`+
+  body+=`<tr class="total"><td>${WEEKLY.length}周合计</td><td>${WEEKLY[0].label}–${WEEKLY[WEEKLY.length-1].label}</td><td>${moneyCell(T.vci)}</td>`+
     `<td>${moneyCell(T.com)}</td><td>${fmtInt(T.co)}</td><td>${fmtInt(T.cu)}</td>`+
     `<td>${moneyCell(T.cu?T.com/T.cu:0)}</td><td>${moneyCell(T.co?T.com/T.co:0)}</td>`+
     `<td>${moneyCell(T.labor)}</td><td style="font-weight:700">${(T.com?T.labor/T.com*100:0).toFixed(2)}%</td></tr>`;
   $("wtable").innerHTML=th+body;
+}
+
+function renderGuestMix(){
+  if(!GUESTMIX || !GUESTMIX.length){ $("gxchart").innerHTML=""; $("gxtable").innerHTML=""; return; }
+  const GXC = {"墨西哥本地客":"#b3541e","亚裔外国客":"#0e7c5b","其他外国客":"#334155"};
+  const natOf = g => { const gr=(g.groups||[]).find(x=>x.es==="Nacionalidad")||{items:[]}; return gr.items; };
+  // stacked bars, one row per week
+  let bars = GUESTMIX.map(g=>{
+    const items = natOf(g), tot = g.total||1;
+    const segs = items.map(it=>{
+      const p = it.n/tot*100;
+      return `<div style="width:${p.toFixed(2)}%;background:${GXC[it.cn]||"#9ca3af"}" title="${it.cn} ${it.es}: ${fmtInt(it.n)} 人 (${p.toFixed(1)}%)">${p>=10?p.toFixed(0)+"%":""}</div>`;
+    }).join("");
+    return `<div style="display:flex;align-items:center;gap:10px;margin:8px 0">`+
+      `<div style="width:120px;flex:none;font-size:12px"><b>${g.label}</b> <span style="color:#9ca3af">${g.range}</span></div>`+
+      `<div class="mixbar" style="flex:1;margin:0">${segs}</div></div>`;
+  }).join("");
+  $("gxchart").innerHTML = bars;
+  // table: counts + pct per week
+  const keys = ["墨西哥本地客","亚裔外国客","其他外国客"];
+  let th = "<tr><th>周次<span class='es'>WEEK</span></th><th>区间<span class='es'>RANGE</span></th>"+
+    "<th>周总客流<span class='es'>TOTAL PX</span></th>"+
+    keys.map(k=>`<th>${k}<span class='es'>${k==="墨西哥本地客"?"MEXICANOS":k==="亚裔外国客"?"EXTR. ASIÁTICOS":"EXTRANJEROS"}</span></th>`).join("")+"</tr>";
+  let body = GUESTMIX.map(g=>{
+    const items = natOf(g), tot = g.total||0;
+    const cell = k => { const it = items.find(x=>x.cn===k);
+      if(!it) return "—";
+      const p = tot? it.n/tot*100 : 0;
+      return `${fmtInt(it.n)} 人<span class="mx">${p.toFixed(1)}%</span>`; };
+    return `<tr><td><b>${g.label}</b></td><td>${g.range}</td><td>${fmtInt(tot)}</td>`+
+      keys.map(k=>`<td>${cell(k)}</td>`).join("")+"</tr>";
+  }).join("");
+  $("gxtable").innerHTML = th + body;
 }
 
 function render(){
@@ -242,7 +284,8 @@ function render(){
   const box=$("kpis");
   if(!rows.length){ box.innerHTML=""; $("chart").innerHTML='<div class="empty">所选区间暂无数据</div>';
     $("tbl").innerHTML=""; $("mixbar").innerHTML=""; $("mixlegend").innerHTML=""; $("chartSub").textContent="";
-    $("wchart").innerHTML=""; $("wtable").innerHTML=""; return; }
+    $("wchart").innerHTML=""; $("wtable").innerHTML="";
+    $("gxchart").innerHTML=""; $("gxtable").innerHTML=""; return; }
   box.innerHTML =
     kpi("含税总收入","VENTAS CON IMPUESTOS",a.vci,true) +
     kpi("不含税收入","COMEDOR",a.comedor,true) +
@@ -311,7 +354,8 @@ ${lab}</title></rect>`;
     `<td>${fmtInt(a.co)}</td><td>${moneyCell(a.ticket)}</td></tr>`;
   $("tbl").innerHTML=th+body+tfoot;
   renderWeekly();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 12:45 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  renderGuestMix();
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 13:04 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: MTD
