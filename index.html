@@ -117,7 +117,7 @@
 
   <div class="panel">
     <h2>每日明细 <span style="font-weight:400;font-size:12px;color:#6b7280">Daily detail</span></h2>
-    <div class="sub">金额双币种显示 · 汇率 1 USD = 17 MXN</div>
+    <div class="sub">金额双币种显示 · 汇率 1 USD = 17 MXN · 每单消费/人均消费 = 不含税收入 COMEDOR ÷ 订单数/客流数（报告原值为按 VENTA NETA 计算）</div>
     <div style="overflow-x:auto"><table id="tbl"></table></div>
     <div class="foot">
       总折扣 TOTAL DESCUENTOS = 折扣明细（食物折扣 + 酒水折扣 + 其他折扣）；招待 TOTAL CORTESÍA = 招待免单（食物 + 酒水 + 其他）。<br>
@@ -132,7 +132,7 @@
 <script src="data.js"></script>
 <script>
 const DATA = window.__DASH_DATA__;
-const WEEKLY = [{"label": "W36", "range": "8/31–9/6", "vci": 1233756.1, "comedor": 1075329.3, "cuentas": 393, "comensales": 1211, "labor": 329837.0, "labor_pct": 30.67, "mgmt_mxn": 73084.36}, {"label": "W37", "range": "9/7–9/13", "vci": 1527410.9, "comedor": 1327124.14, "cuentas": 399, "comensales": 1299, "labor": 331900.36, "labor_pct": 25.01, "mgmt_mxn": 73084.36}, {"label": "W38", "range": "9/14–9/20", "vci": 1250246.0, "comedor": 1089795.68, "cuentas": 391, "comensales": 1231, "labor": 330409.16, "labor_pct": 30.32, "mgmt_mxn": 73084.36}, {"label": "W39", "range": "9/21–9/27", "vci": 1323423.6, "comedor": 1146999.99, "cuentas": 381, "comensales": 1251, "labor": 314797.0, "labor_pct": 27.45, "mgmt_mxn": 73084.36}];
+const WEEKLY = [{"label": "W31", "range": "7/27–8/2", "vci": 478669.55, "comedor": 420752.58, "cuentas": 155, "comensales": 518, "labor": 283392.49, "labor_pct": 67.35, "mgmt_mxn": 73084.36, "days": 2}, {"label": "W32", "range": "8/3–8/9", "vci": 1164433.59, "comedor": 1027362.94, "cuentas": 331, "comensales": 1139, "labor": 238479.58, "labor_pct": 23.21, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W33", "range": "8/10–8/16", "vci": 1366417.65, "comedor": 1215626.73, "cuentas": 440, "comensales": 1372, "labor": 292227.08, "labor_pct": 24.04, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W34", "range": "8/17–8/23", "vci": 1348908.4, "comedor": 1368543.11, "cuentas": 444, "comensales": 1495, "labor": 326531.08, "labor_pct": 23.86, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W35", "range": "8/24–8/30", "vci": 1530599.7, "comedor": 1339785.35, "cuentas": 448, "comensales": 1420, "labor": 336698.24, "labor_pct": 25.13, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W36", "range": "8/31–9/6", "vci": 1233756.1, "comedor": 1075329.3, "cuentas": 393, "comensales": 1211, "labor": 329837.0, "labor_pct": 30.67, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W37", "range": "9/7–9/13", "vci": 1527410.9, "comedor": 1327124.14, "cuentas": 399, "comensales": 1299, "labor": 331900.36, "labor_pct": 25.01, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W38", "range": "9/14–9/20", "vci": 1250246.0, "comedor": 1089795.68, "cuentas": 391, "comensales": 1231, "labor": 330409.16, "labor_pct": 30.32, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W39", "range": "9/21–9/27", "vci": 1323423.6, "comedor": 1146999.99, "cuentas": 381, "comensales": 1251, "labor": 314797.0, "labor_pct": 27.45, "mgmt_mxn": 73084.36, "days": 7}];
 const MONTHLY = [{"ym": "2026-08", "label": "8月", "days": 31, "expected": 31, "vci": 5945442.49, "comedor": 5421367.26, "cuentas": 1838, "comensales": 5998, "sf": 30400.66, "ticket": 2949.6, "percap": 903.86, "davg_vci": 191788.47, "davg_co": 193.5}, {"ym": "2026-09", "label": "9月", "days": 30, "expected": 30, "vci": 5532620.2, "comedor": 4810207.74, "cuentas": 1630, "comensales": 5187, "sf": 67323.47, "ticket": 2951.05, "percap": 927.36, "davg_vci": 184420.67, "davg_co": 172.9}];
 const GUESTMIX = [{"week": 38, "label": "W38", "range": "9/14–9/20", "total": 1207, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 682}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 855}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 322}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 23}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 603}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 322}, {"cn": "电话预订", "es": "TELÉFONO", "n": 150}, {"cn": "员工", "es": "STAFF", "n": 84}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 407}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 130}, {"cn": "包间", "es": "PRIVADOS", "n": 75}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 42}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 27}]}]}, {"week": 39, "label": "W39", "range": "9/21–9/27", "total": 1244, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 719}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 794}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 318}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 44}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 744}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 160}, {"cn": "电话预订", "es": "TELÉFONO", "n": 158}, {"cn": "员工", "es": "STAFF", "n": 150}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 457}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 100}, {"cn": "包间", "es": "PRIVADOS", "n": 89}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 32}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 0}]}]}];
 const FX = DATA.fx_mxn_per_usd || 17;
@@ -186,17 +186,17 @@ function filtered(){
 
 function agg(rows){
   const sum=k=>rows.reduce((a,r)=>a+(r[k]||0),0);
-  const vci=sum("ventas_con_impuestos_mxn"), vn=sum("venta_neta_mxn"),
+  const vci=sum("ventas_con_impuestos_mxn"), com=sum("comedor_mxn"),
         cu=sum("cuentas"), co=sum("comensales");
-  return { vci, comedor:sum("comedor_mxn"), alim:sum("alimentos_mxn"), beb:sum("bebidas_mxn"),
+  return { vci, comedor:com, alim:sum("alimentos_mxn"), beb:sum("bebidas_mxn"),
     imp:sum("impuesto_mxn"), td:sum("total_descuentos_mxn"), cor:sum("cortesia_total_mxn"),
     prop:sum("propinas_mxn"), sf:sum("sobrante_faltante_mxn"), cu, co,
-    ticket: cu? vn/cu:0, percap: co? vn/co:0, n:rows.length };
+    ticket: cu? com/cu:0, percap: co? com/co:0, n:rows.length };
 }
 
-function kpi(cn,es,mxn,hl,count,pct,mom){
+function kpi(cn,es,mxn,hl,count,pct,mom,pctLabel){
   const m = count? null : money(mxn);
-  const pl = (pct!=null && !count) ? `<div class="v2">占不含税收入 ${pct.toFixed(1)}%</div>` : "";
+  const pl = (pct!=null && !count) ? `<div class="v2">${pctLabel||"占不含税收入"} ${pct.toFixed(1)}%</div>` : "";
   return `<div class="kpi${hl?" hl":""}"><div class="cn">${cn}</div><div class="es">${es}</div>`+
     (count? `<div class="v1">${fmtInt(mxn)}</div>`
            : `<div class="v1">${m.p}</div>${pl}<div class="v2">${m.s}</div>`)+(mom||"")+`</div>`;
@@ -248,7 +248,7 @@ ${ml.p} (${ml.s})</title></rect>`;
     "<th>人工成本<span class='es'>LABOR+MGMT</span></th><th>人工占比<span class='es'>LABOR %</span></th></tr>";
   let body=WEEKLY.map(w=>{
     const ticket=w.cuentas? w.comedor/w.cuentas:0, percap=w.comensales? w.comedor/w.comensales:0;
-    return `<tr><td><b>${w.label}</b></td><td>${w.range}</td><td>${moneyCell(w.vci)}</td>`+
+    return `<tr><td><b>${w.label}</b></td><td>${w.range}${w.days<7?`<div class="v2" style="color:#b91c1c">仅${w.days}天日报</div>`:""}</td><td>${moneyCell(w.vci)}</td>`+
     `<td>${moneyCell(w.comedor)}</td><td>${fmtInt(w.comensales)}</td><td>${fmtInt(w.cuentas)}</td>`+
     `<td>${moneyCell(ticket)}</td><td>${moneyCell(percap)}</td>`+
     `<td>${moneyCell(w.labor)}</td><td style="font-weight:700">${w.labor_pct.toFixed(2)}%</td></tr>`;
@@ -386,7 +386,7 @@ function render(){
     kpi("增值税 16%","IMPUESTO",a.imp,false,false,null,_mom(_avg(a.imp,_dn),_avg(_pa.imp,_pn),"neutral")) +
     kpi("总折扣","TOTAL DESCUENTOS",a.td,false,false,null,_mom(_avg(a.td,_dn),_avg(_pa.td,_pn),"neutral")) +
     kpi("招待免单","TOTAL CORTESÍA",a.cor,false,false,null,_mom(_avg(a.cor,_dn),_avg(_pa.cor,_pn),"neutral")) +
-    kpi("小费","PROPINAS",a.prop,false,false,null,_mom(_avg(a.prop,_dn),_avg(_pa.prop,_pn),"up")) +
+    kpi("小费","PROPINAS",a.prop,false,false,a.vci?a.prop/a.vci*100:0,_mom(_avg(a.prop,_dn),_avg(_pa.prop,_pn),"up"),"占含税收入") +
     kpiSF(a.sf,_momSF()) +
     kpi("订单数","CUENTAS",a.cu,false,true,null,_mom(_avg(a.cu,_dn),_avg(_pa.cu,_pn),"up")) +
     kpi("客流数","COMENSALES",a.co,false,true,null,_mom(_avg(a.co,_dn),_avg(_pa.co,_pn),"up")) +
@@ -426,10 +426,11 @@ ${lab}</title></rect>`;
     ["折扣<br><span class='es'>DESCUENTOS</span>"],["招待<br><span class='es'>CORTESÍA</span>"],
     ["小费<br><span class='es'>PROPINAS</span>"],["现金差异<br><span class='es'>SOBR./FALT.</span>"],
     ["订单<span class='es'>CUENTAS</span>"],
-    ["客流<span class='es'>COMENSALES</span>"],["每单消费<span class='es'>TICKET PROM.</span>"]];
+    ["客流<span class='es'>COMENSALES</span>"],["每单消费<span class='es'>TICKET PROM.</span>"],["人均消费<span class='es'>CONSUMO PROM.</span>"]];
   let th="<tr>"+cols.map(c=>`<th>${c[0]}</th>`).join("")+"</tr>";
   let body=rows.map(r=>{
-    const tp=r.cuentas? r.venta_neta_mxn/r.cuentas:0;
+    const tp=r.cuentas? r.comedor_mxn/r.cuentas:0;
+    const pc=r.comensales? r.comedor_mxn/r.comensales:0;
     const sf=r.sobrante_faltante_mxn||0, sfc=sf<0?"color:#b91c1c":"color:#0e7c5b";
     return `<tr><td>${r.date}</td><td>${moneyCell(r.ventas_con_impuestos_mxn)}</td>`+
     `<td>${moneyCell(r.comedor_mxn)}</td><td>${moneyCell(r.alimentos_mxn)}</td>`+
@@ -437,18 +438,18 @@ ${lab}</title></rect>`;
     `<td>${moneyCell(r.total_descuentos_mxn)}</td><td>${moneyCell(r.cortesia_total_mxn)}</td>`+
     `<td>${moneyCell(r.propinas_mxn)}</td><td style="${sfc};font-weight:600">${moneyCell(sf)}</td>`+
     `<td>${fmtInt(r.cuentas)}</td>`+
-    `<td>${fmtInt(r.comensales)}</td><td>${moneyCell(tp)}</td></tr>`;
+    `<td>${fmtInt(r.comensales)}</td><td>${moneyCell(tp)}</td><td>${moneyCell(pc)}</td></tr>`;
   }).join("");
   const tfoot=`<tr class="total"><td>区间合计 (${rows.length}天)</td><td>${moneyCell(a.vci)}</td>`+
     `<td>${moneyCell(a.comedor)}</td><td>${moneyCell(a.alim)}</td><td>${moneyCell(a.beb)}</td>`+
     `<td>${moneyCell(a.imp)}</td><td>${moneyCell(a.td)}</td><td>${moneyCell(a.cor)}</td>`+
     `<td>${moneyCell(a.prop)}</td><td>${moneyCell(a.sf)}</td><td>${fmtInt(a.cu)}</td>`+
-    `<td>${fmtInt(a.co)}</td><td>${moneyCell(a.ticket)}</td></tr>`;
+    `<td>${fmtInt(a.co)}</td><td>${moneyCell(a.ticket)}</td><td>${moneyCell(a.percap)}</td></tr>`;
   $("tbl").innerHTML=th+body+tfoot;
   renderWeekly();
   renderMonthly();
   renderGuestMix();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 15:09 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 15:19 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: all data (October has no reports yet, MTD would be empty)
