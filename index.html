@@ -49,6 +49,7 @@
   th { font-size:12px; color:var(--mut); font-weight:600; }
   th .es { display:block; font-weight:400; font-size:10px; color:#9ca3af; }
   td .mx { display:block; font-size:11px; color:var(--mut); }
+  td .pc { display:block; font-size:11px; color:var(--mut); }
   tr.total td { font-weight:700; background:#faf7f2; }
   .mixbar { height:26px; border-radius:8px; overflow:hidden; display:flex; margin:6px 0 4px; }
   .mixbar div { display:flex; align-items:center; justify-content:center; color:#fff;
@@ -97,7 +98,7 @@
 
   <div class="panel">
     <h2>每周对比 <span style="font-weight:400;font-size:12px;color:#6b7280">Weekly comparison · 周一–周日</span></h2>
-    <div class="sub">人工成本 = 周报人工成本（含税）+ 管理层周成本 US$4,299.08 × 17（总数计入，不单独列出）· 人工占比 = 人工成本 ÷ 税前销售额（日报 COMEDOR 周加总）· 其余数据为日报周加总</div>
+    <div class="sub">人工成本 = 周报人工成本（含税）+ 管理层周成本 US$4,924.08 × 17（总数计入，不单独列出）· 人工占比 = 人工成本 ÷ 税前销售额（日报 COMEDOR 周加总）· 其余数据为日报周加总</div>
     <div id="wchart"></div>
     <div class="legend" style="margin-top:6px"><span><span class="dot" style="background:#b3541e"></span>税前销售额</span><span><span class="dot" style="background:#334155"></span>人工成本（含管理层）</span></div>
     <div style="overflow-x:auto;margin-top:10px"><table id="wtable"></table></div>
@@ -136,8 +137,8 @@
 <script src="data.js"></script>
 <script>
 const DATA = window.__DASH_DATA__;
-const WEEKLY = [{"label": "W31", "range": "7/27–8/2", "vci": 478669.55, "comedor": 420752.58, "cuentas": 155, "comensales": 518, "labor": 283392.49, "labor_pct": 67.35, "mgmt_mxn": 73084.36, "days": 2}, {"label": "W32", "range": "8/3–8/9", "vci": 1164433.59, "comedor": 1027362.94, "cuentas": 331, "comensales": 1139, "labor": 238479.58, "labor_pct": 23.21, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W33", "range": "8/10–8/16", "vci": 1366417.65, "comedor": 1215626.73, "cuentas": 440, "comensales": 1372, "labor": 292227.08, "labor_pct": 24.04, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W34", "range": "8/17–8/23", "vci": 1348908.4, "comedor": 1368543.11, "cuentas": 444, "comensales": 1495, "labor": 326531.08, "labor_pct": 23.86, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W35", "range": "8/24–8/30", "vci": 1530599.7, "comedor": 1339785.35, "cuentas": 448, "comensales": 1420, "labor": 336698.24, "labor_pct": 25.13, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W36", "range": "8/31–9/6", "vci": 1233756.1, "comedor": 1075329.3, "cuentas": 393, "comensales": 1211, "labor": 329837.0, "labor_pct": 30.67, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W37", "range": "9/7–9/13", "vci": 1527410.9, "comedor": 1327124.14, "cuentas": 399, "comensales": 1299, "labor": 331900.36, "labor_pct": 25.01, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W38", "range": "9/14–9/20", "vci": 1250246.0, "comedor": 1089795.68, "cuentas": 391, "comensales": 1231, "labor": 330409.16, "labor_pct": 30.32, "mgmt_mxn": 73084.36, "days": 7}, {"label": "W39", "range": "9/21–9/27", "vci": 1323423.6, "comedor": 1146999.99, "cuentas": 381, "comensales": 1251, "labor": 314797.0, "labor_pct": 27.45, "mgmt_mxn": 73084.36, "days": 7}];
-const MONTHLY = [{"ym": "2026-08", "label": "8月", "days": 31, "expected": 31, "vci": 5945442.49, "comedor": 5421367.26, "cuentas": 1838, "comensales": 5998, "sf": 30400.66, "ticket": 2949.6, "percap": 903.86, "davg_com": 174882.81, "davg_co": 193.5, "labor_est": 1322024.83, "labor_pct": 24.39}, {"ym": "2026-09", "label": "9月", "days": 30, "expected": 30, "vci": 5532620.2, "comedor": 4810207.74, "cuentas": 1630, "comensales": 5187, "sf": 67323.47, "ticket": 2951.05, "percap": 927.36, "davg_com": 160340.26, "davg_co": 172.9, "labor_est": 1399804.39, "labor_pct": 29.1}];
+const WEEKLY = [{"label": "W31", "range": "7/27–8/2", "vci": 478669.55, "comedor": 420752.58, "cuentas": 155, "comensales": 518, "labor": 294017.49, "labor_pct": 69.88, "mgmt_mxn": 83709.36, "days": 2}, {"label": "W32", "range": "8/3–8/9", "vci": 1164433.59, "comedor": 1027362.94, "cuentas": 331, "comensales": 1139, "labor": 249104.58, "labor_pct": 24.25, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W33", "range": "8/10–8/16", "vci": 1366417.65, "comedor": 1215626.73, "cuentas": 440, "comensales": 1372, "labor": 302852.08, "labor_pct": 24.91, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W34", "range": "8/17–8/23", "vci": 1348908.4, "comedor": 1368543.11, "cuentas": 444, "comensales": 1495, "labor": 337156.08, "labor_pct": 24.64, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W35", "range": "8/24–8/30", "vci": 1530599.7, "comedor": 1339785.35, "cuentas": 448, "comensales": 1420, "labor": 347323.24, "labor_pct": 25.92, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W36", "range": "8/31–9/6", "vci": 1233756.1, "comedor": 1075329.3, "cuentas": 393, "comensales": 1211, "labor": 340462.0, "labor_pct": 31.66, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W37", "range": "9/7–9/13", "vci": 1527410.9, "comedor": 1327124.14, "cuentas": 399, "comensales": 1299, "labor": 342525.36, "labor_pct": 25.81, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W38", "range": "9/14–9/20", "vci": 1250246.0, "comedor": 1089795.68, "cuentas": 391, "comensales": 1231, "labor": 341034.16, "labor_pct": 31.29, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W39", "range": "9/21–9/27", "vci": 1323423.6, "comedor": 1146999.99, "cuentas": 381, "comensales": 1251, "labor": 325422.0, "labor_pct": 28.37, "mgmt_mxn": 83709.36, "days": 7}];
+const MONTHLY = [{"ym": "2026-08", "label": "8月", "days": 31, "expected": 31, "vci": 5945442.49, "comedor": 5421367.26, "cuentas": 1838, "comensales": 5998, "alim": 4468987.92, "beb": 952379.3, "prop": 617919.52, "sf": 30400.66, "ticket": 2949.6, "percap": 903.86, "davg_com": 174882.81, "davg_co": 193.5, "labor_est": 1369078.41, "labor_pct": 25.25}, {"ym": "2026-09", "label": "9月", "days": 30, "expected": 30, "vci": 5532620.2, "comedor": 4810207.74, "cuentas": 1630, "comensales": 5187, "alim": 3796475.0, "beb": 1013732.75, "prop": 609738.31, "sf": 67323.47, "ticket": 2951.05, "percap": 927.36, "davg_com": 160340.26, "davg_co": 172.9, "labor_est": 1445340.1, "labor_pct": 30.05}];
 const GUESTMIX = [{"week": 38, "label": "W38", "range": "9/14–9/20", "total": 1207, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 682}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 855}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 322}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 23}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 603}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 322}, {"cn": "电话预订", "es": "TELÉFONO", "n": 150}, {"cn": "员工", "es": "STAFF", "n": 84}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 407}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 130}, {"cn": "包间", "es": "PRIVADOS", "n": 75}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 42}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 27}]}]}, {"week": 39, "label": "W39", "range": "9/21–9/27", "total": 1244, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 719}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 794}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 318}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 44}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 744}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 160}, {"cn": "电话预订", "es": "TELÉFONO", "n": 158}, {"cn": "员工", "es": "STAFF", "n": 150}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 457}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 100}, {"cn": "包间", "es": "PRIVADOS", "n": 89}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 32}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 0}]}]}];
 const FX = DATA.fx_mxn_per_usd || 17;
 let cur = "USD"; // primary currency
@@ -200,7 +201,7 @@ function agg(rows){
 
 function kpi(cn,es,mxn,hl,count,pct,mom,pctLabel){
   const m = count? null : money(mxn);
-  const pl = (pct!=null && !count) ? `<div class="v2">${pctLabel||"占不含税收入"} ${pct.toFixed(1)}%</div>` : "";
+  const pl = (pct!=null && !count) ? `<div class="v2">${pctLabel||"占不含税收入"} ${pct.toFixed(2)}%</div>` : "";
   return `<div class="kpi${hl?" hl":""}"><div class="cn">${cn}</div><div class="es">${es}</div>`+
     (count? `<div class="v1">${fmtInt(mxn)}</div>`
            : `<div class="v1">${m.p}</div>${pl}<div class="v2">${m.s}</div>`)+(mom||"")+`</div>`;
@@ -269,10 +270,12 @@ ${ml.p} (${ml.s})</title></rect>`;
 }
 
 const MMETRICS=[
-  {key:"comedor", cn:"税前销售额", es:"COMEDOR", money:true},
-  {key:"comensales", cn:"客流", es:"COMENSALES", money:false},
-  {key:"percap", cn:"人均消费", es:"PER CAPITA", money:true},
-  {key:"ticket", cn:"每单消费", es:"TICKET PROM.", money:true},
+  {key:"comedor", cn:"税前销售额", es:"COMEDOR", unit:"usd"},
+  {key:"comensales", cn:"客流", es:"COMENSALES", unit:"count"},
+  {key:"percap", cn:"人均消费", es:"PER CAPITA", unit:"usd"},
+  {key:"ticket", cn:"每单消费", es:"TICKET PROM.", unit:"usd"},
+  {key:"beb_pct", cn:"酒水占比", es:"BEBIDAS %", unit:"pct"},
+  {key:"prop_pct", cn:"小费占比", es:"PROPINAS %", unit:"pct"},
 ];
 const MCOLORS=["#b3541e","#0e7c5b","#334155","#7c3aed","#0284c7","#b45309","#be123c","#65a30d"];
 let mmetric="comedor";
@@ -280,10 +283,13 @@ function mDaily(){
   const byM={};
   DATA.records.filter(r=>r.store==="mexico-polanco").forEach(r=>{
     const ym=r.date.slice(0,7), day=+r.date.slice(8,10);
+    const _com=r.comedor_mxn||0, _vci=r.ventas_con_impuestos_mxn||0;
     (byM[ym]=byM[ym]||{ym:ym,pts:[]}).pts.push({day:day,
-      comedor:r.comedor_mxn||0, comensales:r.comensales||0,
-      ticket:r.cuentas? (r.comedor_mxn||0)/r.cuentas:0,
-      percap:r.comensales? (r.comedor_mxn||0)/r.comensales:0});
+      comedor:_com, comensales:r.comensales||0,
+      ticket:r.cuentas? _com/r.cuentas:0,
+      percap:r.comensales? _com/r.comensales:0,
+      beb_pct:_com? (r.bebidas_mxn||0)/_com*100:0,
+      prop_pct:_vci? (r.propinas_mxn||0)/_vci*100:0});
   });
   return Object.values(byM).sort((a,b)=>a.ym<b.ym?-1:1)
     .map(o=>{ o.pts.sort((a,b)=>a.day-b.day); return o; });
@@ -302,15 +308,18 @@ function renderMChart(){
   const vmax=Math.max.apply(null, allV.concat([1]));
   const W=880,H=300,pl=58,pr=14,pt=16,pb=32,iw=W-pl-pr,ih=H-pt-pb;
   const X=d=>pl+iw*(d-1)/30, Y=v=>pt+ih*(1-v/vmax);
-  const cf=v=> metric.money
-    ? (v>=1e6? "$"+(v/1e6).toFixed(1)+"M" : v>=1e3? "$"+(v/1e3).toFixed(0)+"k" : "$"+Math.round(v))
-    : ""+Math.round(v);
+  const cf=v=>{
+    if(metric.unit==="pct") return v.toFixed(2)+"%";
+    if(metric.unit==="count") return ""+Math.round(v);
+    const u=v/FX;
+    return u>=1e6? "$"+(u/1e6).toFixed(1)+"M" : u>=1e3? "$"+(u/1e3).toFixed(0)+"k" : "$"+Math.round(u);
+  };
   let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">';
   for(let i=0;i<=4;i++){ const v=vmax*i/4, y=Y(v);
     s+='<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(1)+'" stroke="#eef0f2"/>'
-      +'<text x="'+(pl-8)+'" y="'+(y+4).toFixed(1)+'" font-size="11" text-anchor="end" fill="#9ca3af">'+cf(v)+'</text>'; }
+      +'<text x="'+(pl-8)+'" y="'+(y+4).toFixed(1)+'" font-size="10" text-anchor="end" fill="#9ca3af">'+cf(v)+'</text>'; }
   [1,5,10,15,20,25,31].forEach(d=>{
-    s+='<text x="'+X(d).toFixed(1)+'" y="'+(H-12)+'" font-size="11" text-anchor="middle" fill="#9ca3af">'+d+'</text>'; });
+    s+='<text x="'+X(d).toFixed(1)+'" y="'+(H-12)+'" font-size="10" text-anchor="middle" fill="#9ca3af">'+d+'</text>'; });
   months.forEach((m,mi)=>{
     const col=MCOLORS[mi%MCOLORS.length];
     let seg=[];
@@ -320,13 +329,13 @@ function renderMChart(){
     m.pts.forEach(pt=>{ if(pt.day-prev>1) flush(); seg.push([X(pt.day), Y(pt[metric.key])]); prev=pt.day; });
     flush();
     m.pts.forEach(pt=>{ const v=pt[metric.key];
-      const vv=metric.money? money(v).p : fmtInt(v);
+      const vv=metric.unit==="pct"? v.toFixed(2)+"%" : metric.unit==="count"? fmtInt(v) : fmtUSD(v/FX);
       s+='<circle cx="'+X(pt.day).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.5" fill="'+col+'"><title>'+m.ym+'-'+String(pt.day).padStart(2,"0")+' '+metric.cn+' | '+vv+'</title></circle>'; });
   });
   let lx=pl;
   months.forEach((m,mi)=>{ const col=MCOLORS[mi%MCOLORS.length];
     s+='<g><rect x="'+lx+'" y="0" width="10" height="10" rx="2" fill="'+col+'"/>'
-      +'<text x="'+(lx+14)+'" y="10" font-size="12" fill="#1a1d21">'+m.ym+'</text></g>';
+      +'<text x="'+(lx+14)+'" y="10" font-size="11" fill="#1a1d21">'+m.ym+'</text></g>';
     lx+=14+m.ym.length*7+20; });
   s+='</svg>';
   $("mchart").innerHTML=s;
@@ -339,10 +348,10 @@ function renderMonthly(){
   // table
   let th="<tr><th>月份<span class='es'>MONTH</span></th><th>数据覆盖<span class='es'>COVERAGE</span></th>"+
     "<th>含税总收入<span class='es'>VCI TOTAL</span></th><th>日均不含税<span class='es'>COMEDOR/DAY</span></th>"+
-    "<th>税前销售额<span class='es'>COMEDOR</span></th><th>订单<span class='es'>CUENTAS</span></th>"+
+    "<th>税前销售额<span class='es'>COMEDOR</span></th><th>食物<span class='es'>ALIMENTOS</span></th><th>食物占比<span class='es'>ALIM %</span></th><th>酒水<span class='es'>BEBIDAS</span></th><th>酒水占比<span class='es'>BEB %</span></th><th>订单<span class='es'>CUENTAS</span></th>"+
     "<th>客流<span class='es'>COMENSALES</span></th><th>日均客流<span class='es'>PX/DAY</span></th>"+
     "<th>每单消费<span class='es'>TICKET</span></th><th>人均消费<span class='es'>PER CAPITA</span></th>"+
-    "<th>人工成本(估算)<span class='es'>LABOR EST.</span></th><th>人工占比<span class='es'>LABOR %</span></th>"+
+    "<th>小费<span class='es'>PROPINAS</span></th><th>小费占比<span class='es'>PROP %</span></th><th>人工成本(估算)<span class='es'>LABOR EST.</span></th><th>人工占比<span class='es'>LABOR %</span></th>"+
     "<th>现金差异合计<span class='es'>SF TOTAL</span></th></tr>";
   let body=MONTHLY.map(m=>{
     const cov = m.days<m.expected
@@ -350,9 +359,9 @@ function renderMonthly(){
       : `${m.days}/${m.expected} 天`;
     const sfc = m.sf<0 ? "color:#b91c1c" : "color:#0e7c5b";
     return `<tr><td><b>${m.ym}</b></td><td>${cov}</td><td>${moneyCell(m.vci)}</td>`+
-    `<td style="font-weight:700">${moneyCell(m.davg_com)}</td><td>${moneyCell(m.comedor)}</td>`+
+    `<td style="font-weight:700">${moneyCell(m.davg_com)}</td><td>${moneyCell(m.comedor)}</td><td>${moneyCell(m.alim)}</td><td>${(m.comedor? m.alim/m.comedor*100:0).toFixed(2)}%</td><td>${moneyCell(m.beb)}</td><td>${(m.comedor? m.beb/m.comedor*100:0).toFixed(2)}%</td>`+
     `<td>${fmtInt(m.cuentas)}</td><td>${fmtInt(m.comensales)}</td><td>${m.davg_co}</td>`+
-    `<td>${moneyCell(m.ticket)}</td><td>${moneyCell(m.percap)}</td>`+
+    `<td>${moneyCell(m.ticket)}</td><td>${moneyCell(m.percap)}</td><td>${moneyCell(m.prop)}</td><td>${(m.vci? m.prop/m.vci*100:0).toFixed(2)}%</td>`+
     `<td>${moneyCell(m.labor_est)}</td><td style="font-weight:700">${m.labor_pct.toFixed(2)}%</td>`+
     `<td style="${sfc};font-weight:600">${moneyCell(m.sf)}</td></tr>`;
   }).join("");
@@ -362,12 +371,16 @@ function renderMonthly(){
     const d=(x,y)=> y? (x-y)/y*100 : 0;
     const cell=p=>{ const c=p>0.05?"#0e7c5b":p<-0.05?"#b91c1c":"#6b7280";
       const s=p>0.05?"▲":p<-0.05?"▼":"–";
-      return `<span style="color:${c};font-weight:700">${s} ${Math.abs(p).toFixed(1)}%</span>`; };
+      return `<span style="color:${c};font-weight:700">${s} ${Math.abs(p).toFixed(2)}%</span>`; };
     body+=`<tr class="total"><td>环比 ${a.ym}→${b.ym}<span class="mx">按整月总数</span></td>`+
       `<td>—</td><td>${cell(d(b.vci, a.vci))}</td><td>—</td>`+
-      `<td>${cell(d(b.comedor, a.comedor))}</td><td>${cell(d(b.cuentas, a.cuentas))}</td>`+
+            `<td>${cell(d(b.comedor, a.comedor))}</td>`+
+      `<td>${cell(d(b.alim, a.alim))}</td><td>${cell(d(b.comedor? b.alim/b.comedor*100:0, a.comedor? a.alim/a.comedor*100:0))}</td>`+
+      `<td>${cell(d(b.beb, a.beb))}</td><td>${cell(d(b.comedor? b.beb/b.comedor*100:0, a.comedor? a.beb/a.comedor*100:0))}</td>`+
+      `<td>${cell(d(b.cuentas, a.cuentas))}</td>`+
       `<td>${cell(d(b.comensales, a.comensales))}</td><td>—</td>`+
-      `<td>${cell(d(b.ticket, a.ticket))}</td><td>${cell(d(b.percap, a.percap))}</td>`+
+            `<td>${cell(d(b.ticket, a.ticket))}</td><td>${cell(d(b.percap, a.percap))}</td>`+
+      `<td>${cell(d(b.prop, a.prop))}</td><td>${cell(d(b.vci? b.prop/b.vci*100:0, a.vci? a.prop/a.vci*100:0))}</td>`+
       `<td>${cell(d(b.labor_est, a.labor_est))}</td><td>—</td><td>—</td></tr>`;
   }
   $("mtable").innerHTML=th+body;
@@ -382,7 +395,7 @@ function renderGuestMix(){
     const items = natOf(g), tot = g.total||1;
     const segs = items.map(it=>{
       const p = it.n/tot*100;
-      return `<div style="width:${p.toFixed(2)}%;background:${GXC[it.cn]||"#9ca3af"}" title="${it.cn} ${it.es}: ${fmtInt(it.n)} 人 (${p.toFixed(1)}%)">${p>=10?p.toFixed(0)+"%":""}</div>`;
+      return `<div style="width:${p.toFixed(2)}%;background:${GXC[it.cn]||"#9ca3af"}" title="${it.cn} ${it.es}: ${fmtInt(it.n)} 人 (${p.toFixed(2)}%)">${p>=10?p.toFixed(0)+"%":""}</div>`;
     }).join("");
     return `<div style="display:flex;align-items:center;gap:10px;margin:8px 0">`+
       `<div style="width:120px;flex:none;font-size:12px"><b>${g.label}</b> <span style="color:#9ca3af">${g.range}</span></div>`+
@@ -399,7 +412,7 @@ function renderGuestMix(){
     const cell = k => { const it = items.find(x=>x.cn===k);
       if(!it) return "—";
       const p = tot? it.n/tot*100 : 0;
-      return `${fmtInt(it.n)} 人<span class="mx">${p.toFixed(1)}%</span>`; };
+      return `${fmtInt(it.n)} 人<span class="mx">${p.toFixed(2)}%</span>`; };
     return `<tr><td><b>${g.label}</b></td><td>${g.range}</td><td>${fmtInt(tot)}</td>`+
       keys.map(k=>`<td>${cell(k)}</td>`).join("")+"</tr>";
   }).join("");
@@ -419,7 +432,7 @@ function render(){
     const pct=(c-p)/Math.abs(p)*100;
     const col=good==="neutral"?"#6b7280":pct>0.05?"var(--acc2)":pct<-0.05?"var(--warn)":"#6b7280";
     const sg=pct>0.05?"▲":pct<-0.05?"▼":"–";
-    return `<div class="v2" style="color:${col};font-weight:600">${_lbl} ${sg} ${Math.abs(pct).toFixed(1)}%</div>`;
+    return `<div class="v2" style="color:${col};font-weight:600">${_lbl} ${sg} ${Math.abs(pct).toFixed(2)}%</div>`;
   };
   const _momSF=()=>{
     if(!_has) return "";
@@ -486,25 +499,30 @@ ${lab}</title></rect>`;
   let body=rows.map(r=>{
     const tp=r.cuentas? r.comedor_mxn/r.cuentas:0;
     const pc=r.comensales? r.comedor_mxn/r.comensales:0;
+    const _com=r.comedor_mxn||0, _vci=r.ventas_con_impuestos_mxn||0;
+    const pa=_com? (r.alimentos_mxn||0)/_com*100:0;
+    const pb=_com? (r.bebidas_mxn||0)/_com*100:0;
+    const pp=_vci? (r.propinas_mxn||0)/_vci*100:0;
     const sf=r.sobrante_faltante_mxn||0, sfc=sf<0?"color:#b91c1c":"color:#0e7c5b";
     return `<tr><td>${r.date}</td><td>${moneyCell(r.ventas_con_impuestos_mxn)}</td>`+
-    `<td>${moneyCell(r.comedor_mxn)}</td><td>${moneyCell(r.alimentos_mxn)}</td>`+
-    `<td>${moneyCell(r.bebidas_mxn)}</td><td>${moneyCell(r.impuesto_mxn)}</td>`+
+    `<td>${moneyCell(r.comedor_mxn)}</td><td>${moneyCell(r.alimentos_mxn)}<span class="pc">${pa.toFixed(2)}%</span></td>`+
+    `<td>${moneyCell(r.bebidas_mxn)}<span class="pc">${pb.toFixed(2)}%</span></td><td>${moneyCell(r.impuesto_mxn)}</td>`+
     `<td>${moneyCell(r.total_descuentos_mxn)}</td><td>${moneyCell(r.cortesia_total_mxn)}</td>`+
-    `<td>${moneyCell(r.propinas_mxn)}</td><td style="${sfc};font-weight:600">${moneyCell(sf)}</td>`+
+    `<td>${moneyCell(r.propinas_mxn)}<span class="pc">${pp.toFixed(2)}%</span></td><td style="${sfc};font-weight:600">${moneyCell(sf)}</td>`+
     `<td>${fmtInt(r.cuentas)}</td>`+
     `<td>${fmtInt(r.comensales)}</td><td>${moneyCell(tp)}</td><td>${moneyCell(pc)}</td></tr>`;
   }).join("");
+  const apa=a.comedor? a.alim/a.comedor*100:0, apb=a.comedor? a.beb/a.comedor*100:0, app=a.vci? a.prop/a.vci*100:0;
   const tfoot=`<tr class="total"><td>区间合计 (${rows.length}天)</td><td>${moneyCell(a.vci)}</td>`+
-    `<td>${moneyCell(a.comedor)}</td><td>${moneyCell(a.alim)}</td><td>${moneyCell(a.beb)}</td>`+
+    `<td>${moneyCell(a.comedor)}</td><td>${moneyCell(a.alim)}<span class="pc">${apa.toFixed(2)}%</span></td><td>${moneyCell(a.beb)}<span class="pc">${apb.toFixed(2)}%</span></td>`+
     `<td>${moneyCell(a.imp)}</td><td>${moneyCell(a.td)}</td><td>${moneyCell(a.cor)}</td>`+
-    `<td>${moneyCell(a.prop)}</td><td>${moneyCell(a.sf)}</td><td>${fmtInt(a.cu)}</td>`+
+    `<td>${moneyCell(a.prop)}<span class="pc">${app.toFixed(2)}%</span></td><td>${moneyCell(a.sf)}</td><td>${fmtInt(a.cu)}</td>`+
     `<td>${fmtInt(a.co)}</td><td>${moneyCell(a.ticket)}</td><td>${moneyCell(a.percap)}</td></tr>`;
   $("tbl").innerHTML=th+body+tfoot;
   renderWeekly();
   renderMonthly();
   renderGuestMix();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 16:45 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-01 17:23 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: all data (October has no reports yet, MTD would be empty)
