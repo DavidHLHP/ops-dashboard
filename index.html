@@ -98,7 +98,7 @@
 
   <div class="panel">
     <h2>每周对比 <span style="font-weight:400;font-size:12px;color:#6b7280">Weekly comparison · 周一–周日</span></h2>
-    <div class="sub">人工成本 = 周报人工成本（含税）+ 管理层周成本 US$4,924.08 × 17（总数计入，不单独列出）· 人工占比 = 人工成本 ÷ 税前销售额（日报 COMEDOR 周加总）· 其余数据为日报周加总</div>
+    <div class="sub">人工成本 = 周报人工成本（含税）+ 管理层周成本 US$4,924.08 × 17（总数计入，不单独列出）· 人工占比 = 人工成本 ÷ 税前销售额（日报 COMEDOR 周加总）· 其余数据为日报周加总 · W40 周报未出，人工成本待补</div>
     <div id="wchart"></div>
     <div class="legend" style="margin-top:6px"><span><span class="dot" style="background:#b3541e"></span>税前销售额</span><span><span class="dot" style="background:#334155"></span>人工成本（含管理层）</span></div>
     <div style="overflow-x:auto;margin-top:10px"><table id="wtable"></table></div>
@@ -106,7 +106,7 @@
 
   <div class="panel widepanel">
     <h2>每月对比 <span style="font-weight:400;font-size:12px;color:#6b7280">Monthly comparison</span></h2>
-    <div class="sub">缺失日期不计为零；环比按<b>整月总数</b>计算 · 每单消费 = 税前销售额 ÷ 订单数 · 人均消费 = 税前销售额 ÷ 客流数 · 人工成本(估算) = 周人工成本按天拆分到自然月（含管理层），无周报覆盖的天数按该月已有周的日均人工推算 · 上方曲线图按星期几对比各月（各点为当月该星期几的日均值，可切换指标）</div>
+    <div class="sub">缺失日期不计为零；环比按<b>整月总数</b>计算 · 每单消费 = 税前销售额 ÷ 订单数 · 人均消费 = 税前销售额 ÷ 客流数 · 人工成本(估算) = 周人工成本按天拆分到自然月（含管理层），无周报覆盖的天数按该月已有周的日均人工推算；该月无任何周覆盖时按全部周的日均人工推算 · 上方曲线图按星期几对比各月（各点为当月该星期几的日均值，可切换指标）</div>
     <div style="display:flex;justify-content:flex-end;margin-bottom:6px"><label style="font-size:13px;color:#6b7280">对比指标 <select id="mmetric" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px"></select></label></div>
     <div id="mchart"></div>
     <div style="overflow-x:auto;margin-top:10px"><table id="mtable"></table></div>
@@ -137,8 +137,8 @@
 <script src="data.js"></script>
 <script>
 const DATA = window.__DASH_DATA__;
-const WEEKLY = [{"label": "W31", "range": "7/27–8/2", "vci": 478669.55, "comedor": 420752.58, "cuentas": 155, "comensales": 518, "labor": 294017.49, "labor_pct": 69.88, "mgmt_mxn": 83709.36, "days": 2}, {"label": "W32", "range": "8/3–8/9", "vci": 1164433.59, "comedor": 1027362.94, "cuentas": 331, "comensales": 1139, "labor": 249104.58, "labor_pct": 24.25, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W33", "range": "8/10–8/16", "vci": 1366417.65, "comedor": 1215626.73, "cuentas": 440, "comensales": 1372, "labor": 302852.08, "labor_pct": 24.91, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W34", "range": "8/17–8/23", "vci": 1348908.4, "comedor": 1368543.11, "cuentas": 444, "comensales": 1495, "labor": 337156.08, "labor_pct": 24.64, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W35", "range": "8/24–8/30", "vci": 1530599.7, "comedor": 1339785.35, "cuentas": 448, "comensales": 1420, "labor": 347323.24, "labor_pct": 25.92, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W36", "range": "8/31–9/6", "vci": 1233756.1, "comedor": 1075329.3, "cuentas": 393, "comensales": 1211, "labor": 340462.0, "labor_pct": 31.66, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W37", "range": "9/7–9/13", "vci": 1527410.9, "comedor": 1327124.14, "cuentas": 399, "comensales": 1299, "labor": 342525.36, "labor_pct": 25.81, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W38", "range": "9/14–9/20", "vci": 1250246.0, "comedor": 1089795.68, "cuentas": 391, "comensales": 1231, "labor": 341034.16, "labor_pct": 31.29, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W39", "range": "9/21–9/27", "vci": 1323423.6, "comedor": 1146999.99, "cuentas": 381, "comensales": 1251, "labor": 325422.0, "labor_pct": 28.37, "mgmt_mxn": 83709.36, "days": 7}];
-const MONTHLY = [{"ym": "2026-08", "label": "8月", "days": 31, "expected": 31, "vci": 5945442.49, "comedor": 5421367.26, "cuentas": 1838, "comensales": 5998, "alim": 4468987.92, "beb": 952379.3, "prop": 617919.52, "sf": 30400.66, "ticket": 2949.6, "percap": 903.86, "davg_com": 174882.81, "davg_co": 193.5, "labor_est": 1369078.41, "labor_pct": 25.25}, {"ym": "2026-09", "label": "9月", "days": 30, "expected": 30, "vci": 5532620.2, "comedor": 4810207.74, "cuentas": 1630, "comensales": 5187, "alim": 3796475.0, "beb": 1013732.75, "prop": 609738.31, "sf": 67323.47, "ticket": 2951.05, "percap": 927.36, "davg_com": 160340.26, "davg_co": 172.9, "labor_est": 1445340.1, "labor_pct": 30.05}, {"ym": "2026-10", "label": "10月", "days": 4, "expected": 31, "vci": 1004730.4, "comedor": 874228.44, "cuentas": 287, "comensales": 943, "alim": 674708.61, "beb": 199519.82, "prop": 117736.88, "sf": 39630.14, "ticket": 3046.09, "percap": 927.07, "davg_com": 218557.11, "davg_co": 235.8, "labor_est": 0.0, "labor_pct": 0.0}];
+const WEEKLY = [{"label": "W31", "range": "7/27–8/2", "vci": 478669.55, "comedor": 420752.58, "cuentas": 155, "comensales": 518, "labor": 294017.49, "labor_pct": 69.88, "mgmt_mxn": 83709.36, "days": 2}, {"label": "W32", "range": "8/3–8/9", "vci": 1164433.59, "comedor": 1027362.94, "cuentas": 331, "comensales": 1139, "labor": 249104.58, "labor_pct": 24.25, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W33", "range": "8/10–8/16", "vci": 1366417.65, "comedor": 1215626.73, "cuentas": 440, "comensales": 1372, "labor": 302852.08, "labor_pct": 24.91, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W34", "range": "8/17–8/23", "vci": 1348908.4, "comedor": 1368543.11, "cuentas": 444, "comensales": 1495, "labor": 337156.08, "labor_pct": 24.64, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W35", "range": "8/24–8/30", "vci": 1530599.7, "comedor": 1339785.35, "cuentas": 448, "comensales": 1420, "labor": 347323.24, "labor_pct": 25.92, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W36", "range": "8/31–9/6", "vci": 1233756.1, "comedor": 1075329.3, "cuentas": 393, "comensales": 1211, "labor": 340462.0, "labor_pct": 31.66, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W37", "range": "9/7–9/13", "vci": 1527410.9, "comedor": 1327124.14, "cuentas": 399, "comensales": 1299, "labor": 342525.36, "labor_pct": 25.81, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W38", "range": "9/14–9/20", "vci": 1250246.0, "comedor": 1089795.68, "cuentas": 391, "comensales": 1231, "labor": 341034.16, "labor_pct": 31.29, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W39", "range": "9/21–9/27", "vci": 1323423.6, "comedor": 1146999.99, "cuentas": 381, "comensales": 1251, "labor": 325422.0, "labor_pct": 28.37, "mgmt_mxn": 83709.36, "days": 7}, {"label": "W40", "range": "9/28–10/4", "vci": 1258927.6, "comedor": 1094483.62, "cuentas": 373, "comensales": 1192, "labor": null, "labor_pct": null, "mgmt_mxn": 83709.36, "days": 7}];
+const MONTHLY = [{"ym": "2026-08", "label": "8月", "days": 31, "expected": 31, "vci": 5945442.49, "comedor": 5421367.26, "cuentas": 1838, "comensales": 5998, "alim": 4468987.92, "beb": 952379.3, "prop": 617919.52, "sf": 30400.66, "ticket": 2949.6, "percap": 903.86, "davg_com": 174882.81, "davg_co": 193.5, "labor_est": 1369078.41, "labor_pct": 25.25}, {"ym": "2026-09", "label": "9月", "days": 30, "expected": 30, "vci": 5532620.2, "comedor": 4810207.74, "cuentas": 1630, "comensales": 5187, "alim": 3796475.0, "beb": 1013732.75, "prop": 609738.31, "sf": 67323.47, "ticket": 2951.05, "percap": 927.36, "davg_com": 160340.26, "davg_co": 172.9, "labor_est": 1445340.1, "labor_pct": 30.05}, {"ym": "2026-10", "label": "10月", "days": 4, "expected": 31, "vci": 1004730.4, "comedor": 874228.44, "cuentas": 287, "comensales": 943, "alim": 674708.61, "beb": 199519.82, "prop": 117736.88, "sf": 39630.14, "ticket": 3046.09, "percap": 927.07, "davg_com": 218557.11, "davg_co": 235.8, "labor_est": 182850.6, "labor_pct": 20.92}];
 const GUESTMIX = [{"week": 38, "label": "W38", "range": "9/14–9/20", "total": 1207, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 682}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 855}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 322}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 23}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 603}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 322}, {"cn": "电话预订", "es": "TELÉFONO", "n": 150}, {"cn": "员工", "es": "STAFF", "n": 84}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 407}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 130}, {"cn": "包间", "es": "PRIVADOS", "n": 75}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 42}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 27}]}]}, {"week": 39, "label": "W39", "range": "9/21–9/27", "total": 1244, "groups": [{"cn": "用餐时段", "es": "Horario", "items": [{"cn": "午餐", "es": "COMIDA", "n": 719}, {"cn": "晚餐", "es": "CENA", "n": 525}]}, {"cn": "客源国籍", "es": "Nacionalidad", "items": [{"cn": "墨西哥本地客", "es": "MEXICANOS", "n": 794}, {"cn": "亚裔外国客", "es": "EXTRANJEROS ASIÁTICOS", "n": 318}, {"cn": "其他外国客", "es": "EXTRANJEROS", "n": 44}]}, {"cn": "预订渠道", "es": "Canal de reserva", "items": [{"cn": "直接到店", "es": "WALK IN", "n": 744}, {"cn": "OpenTable", "es": "OPENTABLE", "n": 160}, {"cn": "电话预订", "es": "TELÉFONO", "n": 158}, {"cn": "员工", "es": "STAFF", "n": 150}]}, {"cn": "其他", "es": "Otros", "items": [{"cn": "首次体验火锅", "es": "PRIMER HOT POT", "n": 457}, {"cn": "预订未到", "es": "INASISTENCIA", "n": 100}, {"cn": "包间", "es": "PRIVADOS", "n": 89}, {"cn": "生日", "es": "CUMPLEAÑOS", "n": 32}, {"cn": "候位入座", "es": "LISTA DE ESPERA", "n": 0}]}]}];
 const FX = DATA.fx_mxn_per_usd || 17;
 let cur = "USD"; // primary currency
@@ -233,13 +233,15 @@ function renderWeekly(){
     s2+=`<line x1="${lpad}" y1="${y}" x2="${LW-8}" y2="${y}" stroke="#eef0f2"/>`; });
   WEEKLY.forEach((w,i)=>{
     const cx=lpad+gw*i+gw/2;
-    const hs=(LH-80)*(w.comedor/smax), hl=(LH-80)*(w.labor/smax);
-    const ms=money(w.comedor), ml=money(w.labor);
+    const hs=(LH-80)*(w.comedor/smax), hl=w.labor==null?0:(LH-80)*(w.labor/smax);
+    const ms=money(w.comedor);
     s2+=`<rect x="${(cx-bw2-3).toFixed(1)}" y="${(LH-40-hs).toFixed(1)}" width="${bw2.toFixed(1)}" height="${hs.toFixed(1)}" rx="4" fill="#b3541e"><title>${w.label} 税前销售额
 ${ms.p} (${ms.s})</title></rect>`;
+    if(w.labor!=null){ const ml=money(w.labor);
     s2+=`<rect x="${(cx+3).toFixed(1)}" y="${(LH-40-hl).toFixed(1)}" width="${bw2.toFixed(1)}" height="${hl.toFixed(1)}" rx="4" fill="#334155"><title>${w.label} 人工成本
 ${ml.p} (${ml.s})</title></rect>`;
     s2+=`<text x="${cx.toFixed(1)}" y="${(LH-46-Math.max(hs,hl)).toFixed(1)}" font-size="11" font-weight="700" text-anchor="middle" fill="#334155">${w.labor_pct.toFixed(1)}%</text>`;
+    }
     s2+=`<text x="${cx.toFixed(1)}" y="${LH-22}" font-size="11" text-anchor="middle" fill="#6b7280">${w.label}</text>`;
     s2+=`<text x="${cx.toFixed(1)}" y="${LH-8}" font-size="10" text-anchor="middle" fill="#9ca3af">${w.range}</text>`;
   });
@@ -256,16 +258,16 @@ ${ml.p} (${ml.s})</title></rect>`;
     return `<tr><td><b>${w.label}</b></td><td>${w.range}${w.days<7?`<div class="v2" style="color:#b91c1c">仅${w.days}天日报</div>`:""}</td><td>${moneyCell(w.vci)}</td>`+
     `<td>${moneyCell(w.comedor)}</td><td>${fmtInt(w.comensales)}</td><td>${fmtInt(w.cuentas)}</td>`+
     `<td>${moneyCell(ticket)}</td><td>${moneyCell(percap)}</td>`+
-    `<td>${moneyCell(w.labor)}</td><td style="font-weight:700">${w.labor_pct.toFixed(2)}%</td></tr>`;
+    `<td>${w.labor==null?'<span style="color:#9ca3af">待周报</span>':moneyCell(w.labor)}</td><td style="font-weight:700">${w.labor_pct==null?'<span style="color:#9ca3af">—</span>':w.labor_pct.toFixed(2)+'%'}</td></tr>`;
   }).join("");
   const T={
     vci:WEEKLY.reduce((a,w)=>a+w.vci,0), com:WEEKLY.reduce((a,w)=>a+w.comedor,0),
     cu:WEEKLY.reduce((a,w)=>a+w.cuentas,0), co:WEEKLY.reduce((a,w)=>a+w.comensales,0),
-    labor:WEEKLY.reduce((a,w)=>a+w.labor,0) };
+    labor:WEEKLY.reduce((a,w)=>a+(w.labor||0),0), nlabor:WEEKLY.filter(w=>w.labor!=null).length };
   body+=`<tr class="total"><td>${WEEKLY.length}周合计</td><td>${WEEKLY[0].label}–${WEEKLY[WEEKLY.length-1].label}</td><td>${moneyCell(T.vci)}</td>`+
     `<td>${moneyCell(T.com)}</td><td>${fmtInt(T.co)}</td><td>${fmtInt(T.cu)}</td>`+
     `<td>${moneyCell(T.cu?T.com/T.cu:0)}</td><td>${moneyCell(T.co?T.com/T.co:0)}</td>`+
-    `<td>${moneyCell(T.labor)}</td><td style="font-weight:700">${(T.com?T.labor/T.com*100:0).toFixed(2)}%</td></tr>`;
+    `<td>${moneyCell(T.labor)}${T.nlabor<WEEKLY.length?'<span class="mx">有周待补</span>':''}</td><td style="font-weight:700">${T.nlabor<WEEKLY.length?'<span style="color:#9ca3af">—</span>':(T.com?T.labor/T.com*100:0).toFixed(2)+'%'}</td></tr>`;
   $("wtable").innerHTML=th+body;
 }
 
@@ -523,7 +525,7 @@ ${lab}</title></rect>`;
   renderWeekly();
   renderMonthly();
   renderGuestMix();
-  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-04 22:29 · 汇率 Rate: 1 USD = "+FX+" MXN";
+  $("updatedAt").textContent="数据更新时间 Generated: 2026-10-05 09:06 · 汇率 Rate: 1 USD = "+FX+" MXN";
 }
 
 // default: all data (October has no reports yet, MTD would be empty)
