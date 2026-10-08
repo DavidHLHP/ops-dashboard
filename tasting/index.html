@@ -144,7 +144,8 @@
 
   /* print report */
   .print-only{display:none}
-  .print-line,.print-overall{display:none}
+  .print-line,.print-overall,.print-sig-val{display:none}
+  .print-overall-title{display:none}
   .print-head h1{font-size:25px; font-weight:800; margin:0 0 4px; letter-spacing:-.01em}
   .print-head .ph-sub{font-size:13px; color:#555; margin:0 0 14px}
   .ph-meta{display:grid; grid-template-columns:1fr 1fr; gap:9px 28px; border-top:2px solid #111; border-bottom:1px solid #ccc; padding:12px 2px 14px; margin-bottom:18px}
@@ -168,8 +169,17 @@
     .row{padding:6px 10px; break-inside:avoid}
     .row-top,.row-tools{display:none !important}
     .print-line{display:block; font-size:13.5px; line-height:1.55; color:#111}
+    /* 总体备注 / 整改要求 — 打印时完整显示，不能被隐藏 */
+    #sec-overall{break-inside:auto; page-break-inside:auto}
+    #sec-overall .card{border:1px solid #bbb !important; padding:14px !important}
+    #sec-overall label[for="overall"]{display:none !important}
+    .print-overall-title{display:block !important; font-size:15px; font-weight:800; color:#111; margin:14px 0 8px; padding-top:12px; border-top:1px solid #ddd}
     .overall{display:none !important}
-    .print-overall{display:block; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; font-size:13.5px; line-height:1.65; border:1px solid #ddd; border-radius:8px; padding:10px 12px; min-height:36px}
+    .print-overall{display:block !important; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; font-size:13.5px; line-height:1.7; color:#111; border:1px solid #ccc; border-radius:8px; padding:12px 14px; min-height:44px; background:#fff}
+    .sig-grid{margin-top:16px}
+    .sig{color:#111}
+    .sig input{display:none !important}
+    .print-sig-val{display:block !important; font-size:14px; color:#111; padding:6px 2px 2px; min-height:22px; border-bottom:1px solid #ccc}
     .thumbs{margin-top:6px; gap:5px}
     .thumbs:empty{display:none}
     .thumb{width:calc((100% - 10px)/3); height:auto; border-radius:6px; break-inside:avoid}
@@ -251,7 +261,7 @@
       <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
       <div class="grade" id="gradeBadge">未评分</div>
     </div>
-    <div class="summary-sub" id="summarySub">已评 0 / 25 项 · 未试吃不计入分母 · 0.5 分为待改进，0 分为不合格</div>
+    <div class="summary-sub" id="summarySub">已评 0 / 25 项 · 未试按 1 分计入 · 0.5 分为待改进，0 分为不合格</div>
   </div>
 
   <div id="sections"></div>
@@ -266,11 +276,12 @@
       <div class="breakdown" id="breakdown" style="margin-bottom:14px"></div>
       <label for="overall" style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);margin-bottom:6px">总体备注 / 整改要求</label>
       <textarea id="overall" class="overall" placeholder="例如：汤底浓度不稳定，晚市需复检；羊肉串火候一致性待加强，已通知后厨…"></textarea>
+      <div class="print-overall-title">总体备注 / 整改要求</div>
       <div class="print-overall" id="printOverall">无</div>
       <div class="sig-grid">
-        <div class="sig">试餐人签字<input id="sigTaster" type="text" placeholder="签字" /></div>
-        <div class="sig">门店负责人签字<input id="sigManager" type="text" placeholder="签字" /></div>
-        <div class="sig">复检日期<input id="sigDate" type="date" /></div>
+        <div class="sig">试餐人签字<input id="sigTaster" type="text" placeholder="签字" /><span class="print-sig-val" id="printSigTaster"></span></div>
+        <div class="sig">门店负责人签字<input id="sigManager" type="text" placeholder="签字" /><span class="print-sig-val" id="printSigManager"></span></div>
+        <div class="sig">复检日期<input id="sigDate" type="date" /><span class="print-sig-val" id="printSigDate"></span></div>
       </div>
     </div>
     <p class="hint">导出 PDF：点击下方「导出 PDF 报告」后在系统打印窗口选择「另存为 PDF」即可。照片与备注会一并出现在报告中；未导出的内容仅保留在当前页面，刷新后清空，请及时导出。</p>
@@ -420,12 +431,12 @@ function build(){
 function updatePrintScore(row, v){
   var ps = row.querySelector('.print-score');
   if(v===null||v===undefined){ ps.textContent=''; return; }
-  ps.textContent = (v==='na' ? '未试吃' : v+' 分');
+  ps.textContent = (v==='na' ? '1 分（未试）' : v+' 分');
 }
 
 function scoreText(v){
   if(v===null||v===undefined) return '未评分';
-  if(v==='na') return '未试';
+  if(v==='na') return '1分（未试）';
   return fmt(v)+'分';
 }
 function syncPrintLine(row, k){
@@ -439,6 +450,21 @@ function syncPrintLine(row, k){
 function syncOverall(){
   var t = document.getElementById('overall').value.trim();
   document.getElementById('printOverall').textContent = t || '无';
+  var st = document.getElementById('sigTaster');
+  var sm = document.getElementById('sigManager');
+  var sd = document.getElementById('sigDate');
+  var pst = document.getElementById('printSigTaster');
+  var psm = document.getElementById('printSigManager');
+  var psd = document.getElementById('printSigDate');
+  if(pst && st) pst.textContent = String(st.value||'').trim();
+  if(psm && sm) psm.textContent = String(sm.value||'').trim();
+  if(psd && sd){
+    var dv = String(sd.value||'').trim();
+    if(dv){
+      var p = dv.split('-');
+      psd.textContent = (p.length===3) ? (p[0]+'年'+parseInt(p[1],10)+'月'+parseInt(p[2],10)+'日') : dv;
+    } else psd.textContent = '';
+  }
 }
 function syncAllPrint(){
   document.querySelectorAll('.row[data-key]').forEach(function(r){
@@ -491,7 +517,7 @@ function recalc(){
     var cnow=0, cmax=0;
     cat.items.forEach(function(_, idx){
       var s = state[key(cat.id,idx)].score;
-      if(s==='na'){ done++; return; }
+      if(s==='na'){ done++; cnow+=1; cmax+=1; now+=1; maxCounted+=1; return; }
       if(s===null||s===undefined){ return; }
       done++; cnow+=s; cmax+=1; now+=s; maxCounted+=1;
     });
@@ -512,7 +538,7 @@ function recalc(){
   }
   document.getElementById('gradeBadge').textContent = grade;
   document.getElementById('rateText').textContent = rate;
-  document.getElementById('summarySub').textContent = '已评 '+done+' / '+TOTAL+' 项 · 计分 '+maxCounted+' 项 · 未试吃不计入分母 · 0.5 分为待改进，0 分为不合格';
+  document.getElementById('summarySub').textContent = '已评 '+done+' / '+TOTAL+' 项 · 计分 '+maxCounted+' 项 · 未试按 1 分计入 · 0.5 分为待改进，0 分为不合格';
   fillPrintHead(now, maxCounted, rate, grade);
 }
 function fmt(n){ return (Math.round(n*10)/10).toString().replace(/\.0$/,''); }
@@ -545,11 +571,17 @@ function fillPrintHead(now, maxCounted, rate, grade){
   if(e) e.addEventListener('input', function(){ recalc(); });
 });
 document.getElementById('overall').addEventListener('input', syncOverall);
+['sigTaster','sigManager','sigDate'].forEach(function(id){
+  var e=document.getElementById(id);
+  if(e) e.addEventListener('input', syncOverall);
+  if(e) e.addEventListener('change', syncOverall);
+});
 window.addEventListener('beforeprint', function(){ recalc(); syncAllPrint(); });
 
 // actions
 document.getElementById('pdfBtn').addEventListener('click', function(){
   recalc();
+  syncAllPrint();
   setTimeout(function(){ window.print(); }, 30);
 });
 var resetArmed=false, resetTimer=null;
